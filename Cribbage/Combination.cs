@@ -2,16 +2,13 @@
 {
     public class Combination
     {
-        /// <summary>
-        /// There are 46 possible draw cards
-        /// </summary>
-        private const int NUM_DRAW_CARDS = 46;
-        private readonly Card[] Hand;
-        private readonly Card[] Discard;
+        private int _drawCards { get => SuitUtil.Count * CardRank.Count - _hand.Length - _discard.Length; }
+        private readonly Card[] _hand;
+        private readonly Card[] _discard;
         public Combination(Card[] hand, Card[] discard)
         {
-            Hand = hand.Sort();
-            Discard = discard.Sort();           
+            _hand = hand.Sort();
+            _discard = discard.Sort();           
         }
         public int ValueInHand
         {
@@ -19,12 +16,12 @@
             {
                 int output = 0;
                 // flush is worth 4 points
-                if (Flush) output += 4;
+                if (_flush) output += 4;
 
                 // if N cards are of same rank, add N!
-                foreach (int rank in Hand.Select(o => o.Rank.Value).Distinct())
+                foreach (int rank in _hand.Select(o => o.Rank.Value).Distinct())
                 {
-                    int countInRank = Hand.CountInRank(rank);
+                    int countInRank = _hand.CountInRank(rank);
                     int product = 1;
                     for (int i = 2; i <= countInRank; i++) 
                     {
@@ -51,57 +48,60 @@
             get
             {
                 int output = 0;
-                int numSuits = Enum.GetNames(typeof(Suit)).Length;
 
                 // if flush, add one for every possible draw card in suit
-                if (Flush)
+                if (_flush)
                 {
-                    output += CardRank.Count - Hand.Count() - Discard.CountInSuit(Hand[0].Suit); ;
+                    output += CardRank.Count - _hand.Count() - _discard.CountInSuit(_hand[0].Suit); ;
                 }
                 
                 // if any jacks present, add one for every possible draw card in suit
-                foreach (Suit suit in Hats.Keys)
+                foreach (Suit suit in _hats.Keys)
                 {
-                    output += CardRank.Count - Hand.CountInSuit(suit) - Discard.CountInSuit(suit);
+                    output += CardRank.Count - _hand.CountInSuit(suit) - _discard.CountInSuit(suit);
                 }
                 
                 // if possible to draw pair, trip or four-of-a-kind, add relevant number of points (2, 4, 6)
-                foreach (int rank in Hand.Select(o => o.Rank.Value).Distinct())
+                foreach (int rank in _hand.Select(o => o.Rank.Value).Distinct())
                 {
-                    int countInRank = Hand.CountInRank(rank);
-                    output += (numSuits - Discard.CountInRank(rank) - countInRank) * 2 * countInRank;
+                    int countInRank = _hand.CountInRank(rank);
+                    output += (SuitUtil.Count - _discard.CountInRank(rank) - countInRank) * 2 * countInRank;
                 }
-                
+
                 // runs? runs? how runs?
                 // dear lord, 15s
+
+
+                // divide possible points by number of possible draws to get expected value
+                double dummyReturn = (double)output / _drawCards;
                 throw new NotImplementedException();
             }
         }
 
-        private bool Flush 
+        private bool _flush 
         {
-            get => this.Flush;
-            init => this.Flush = this.Hand.CountInSuit(this.Hand[0].Suit) == this.Hand.Length;
+            get => _flush;
+            init => _flush = _hand.CountInSuit(_hand[0].Suit) == _hand.Length;
         }
-        private List<int[]> Runs 
+        private List<int[]> _runs 
         {
-            get => this.Runs;
+            get => _runs;
             init
             {
-                this.Runs = new();
+                _runs = new();
                 Card? sequenceStart = null;
-                for (int i = 1; i < this.Hand.Length; i++)
+                for (int i = 1; i < _hand.Length; i++)
                 {
-                    Card sequenceEnd = this.Hand[i];
-                    if (sequenceEnd.IsSequential(this.Hand[i - 1]))
+                    Card sequenceEnd = _hand[i];
+                    if (sequenceEnd.IsSequential(_hand[i - 1]))
                     {
-                        sequenceStart = this.Hand[i - 1];
+                        sequenceStart = _hand[i - 1];
                     }
                     else
                     {
                         if (sequenceStart != null && sequenceEnd - sequenceStart > 2)
                         {
-                            this.Runs.Add(new int[] {
+                            _runs.Add(new int[] {
                             sequenceStart.Rank.Value,
                             sequenceEnd.Rank.Value
                         });
@@ -110,25 +110,25 @@
                 }
             }
         }
-        private Dictionary<Suit, int> Hats 
+        private Dictionary<Suit, int> _hats 
         {
-            get => this.Hats;
+            get => _hats;
             init
             {
-                this.Hats = new();
-                for (int i = 0; i < this.Hand.Length; i++)
+                _hats = new();
+                for (int i = 0; i < _hand.Length; i++)
                 {
-                    if (this.Hand[i].Rank == CardRank.JACK)
+                    if (_hand[i].Rank == CardRank.JACK)
                     {
-                        this.Hats.Add(this.Hand[i].Suit, 0);
+                        _hats.Add(_hand[i].Suit, 0);
                     }
                 }
-                for (int i = 0; i < this.Hand.Length; i++)
+                for (int i = 0; i < _hand.Length; i++)
                 {
-                    Suit thisSuit = this.Hand[i].Suit;
-                    if (this.Hand[i].Rank != CardRank.JACK && this.Hats.Keys.Contains(thisSuit))
+                    Suit thisSuit = _hand[i].Suit;
+                    if (_hand[i].Rank != CardRank.JACK && _hats.Keys.Contains(thisSuit))
                     {
-                        this.Hats[thisSuit]++;
+                        _hats[thisSuit]++;
                     }
                 }
             }

@@ -30,14 +30,14 @@
                     output += product;
                 }
 
-                // runs?
+                // runs
+                foreach(int)
 
                 // 15s?
 
                 throw new NotImplementedException();
             }
         }
-
         /// <summary>
         /// The expected value added by the draw card.
         /// 
@@ -83,12 +83,16 @@
             get => _flush;
             init => _flush = _hand.CountInSuit(_hand[0].Suit) == _hand.Length;
         }
-        private List<int[]> _runs 
+
+        /// <summary>
+        /// Contains an array of two integers, specifying the upper and lower bounds of the sequence. No information on replicates is contained here.
+        /// </summary>
+        private int[] _runs 
         {
             get => _runs;
             init
             {
-                _runs = new();
+                _runs = [0, 0];
                 Card? sequenceStart = null;
                 for (int i = 1; i < _hand.Length; i++)
                 {
@@ -97,14 +101,12 @@
                     {
                         sequenceStart = _hand[i - 1];
                     }
-                    else
+                    if (!sequenceEnd.IsSequential(_hand[i - 1]) || i == _hand.Length -1 )
                     {
                         if (sequenceStart != null && sequenceEnd - sequenceStart > 2)
                         {
-                            _runs.Add(new int[] {
-                            sequenceStart.Rank.Value,
-                            sequenceEnd.Rank.Value
-                        });
+                            _runs[0] = sequenceStart.Rank.Value;
+                            _runs[1] = sequenceEnd.Rank.Value;
                         }
                     }
                 }

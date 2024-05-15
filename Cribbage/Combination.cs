@@ -31,7 +31,7 @@ namespace Cribbage
             int replicates = 0;
             for(int i = 1; i < this.Hand.Length; i++) 
             {
-                if (this.Hand[i].Rank.Rank == this.Hand[i - 1].Rank.Rank)
+                if (this.Hand[i].Rank.Value == this.Hand[i - 1].Rank.Value)
                 {
                     replicates += 1;
                 }
@@ -40,13 +40,13 @@ namespace Cribbage
                     switch (replicates) 
                     {
                         case 1:
-                            this.Pairs.Add(this.Hand[i - 1].Rank.Rank);
+                            this.Pairs.Add(this.Hand[i - 1].Rank.Value);
                             break;
                         case 2:
-                            this.Trips.Add(this.Hand[i - 1].Rank.Rank);
+                            this.Trips.Add(this.Hand[i - 1].Rank.Value);
                             break;
                         case 3:
-                            this.FourOfAKind = this.Hand[i - 1].Rank.Rank;
+                            this.FourOfAKind = this.Hand[i - 1].Rank.Value;
                             break;
                         default: break;
                     }
@@ -67,17 +67,17 @@ namespace Cribbage
         {
             for (int i = 0; i < this.Hand.Length; i++) 
             {
-                if (this.Hand[i].Rank == CardValue.JACK) 
+                if (this.Hand[i].Rank == CardRank.JACK) 
                 {
                     this.Hat.Add(this.Hand[i].Suit, 0);
                 }
             }
             for (int i = 0; i < this.Hand.Length; i++)
             {
-                Suit curSuit = this.Hand[i].Suit;
-                if (this.Hand[i].Rank != CardValue.JACK && this.Hat.Keys.Contains(curSuit))
+                Suit thisSuit = this.Hand[i].Suit;
+                if (this.Hand[i].Rank != CardRank.JACK && this.Hat.Keys.Contains(thisSuit))
                 {
-                    this.Hat[curSuit]++;
+                    this.Hat[thisSuit]++;
                 }
             }
         }
@@ -86,10 +86,10 @@ namespace Cribbage
             int sequenceStart = 0;
             for(int i = 1; i < this.Hand.Length; i++) 
             {
-                int sequenceEnd = this.Hand[i].Rank.Rank;
-                if (sequenceEnd == this.Hand[i - 1].Rank.Rank + 1)
+                int sequenceEnd = this.Hand[i].Rank.Value;
+                if (sequenceEnd == this.Hand[i - 1].Rank.Value + 1)
                 {
-                    sequenceStart = this.Hand[i - 1].Rank.Rank;
+                    sequenceStart = this.Hand[i - 1].Rank.Value;
                 }
                 else 
                 {

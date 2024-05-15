@@ -11,10 +11,7 @@
         public Combination(Card[] hand, Card[] discard)
         {
             Hand = hand.Sort();
-            Discard = discard.Sort();
-            getFlush();
-            getHats();
-            GetRuns();
+            Discard = discard.Sort();           
         }
         public int ValueInHand
         {
@@ -63,7 +60,7 @@
                 }
                 
                 // if any jacks present, add one for every possible draw card in suit
-                foreach (Suit suit in Hat.Keys)
+                foreach (Suit suit in Hats.Keys)
                 {
                     output += CardRank.Count - Hand.CountInSuit(suit) - Discard.CountInSuit(suit);
                 }
@@ -81,65 +78,61 @@
             }
         }
 
-        // flush: every card in hand is the same suit
-        private void getFlush()
+        private bool Flush 
         {
-            this.Flush = this.Hand.CountInSuit(this.Hand[0].Suit) == this.Hand.Length;
+            get => this.Flush;
+            init => this.Flush = this.Hand.CountInSuit(this.Hand[0].Suit) == this.Hand.Length;
         }
-        private void getHats()
+        private List<int[]> Runs 
         {
-            for (int i = 0; i < this.Hand.Length; i++)
+            get => this.Runs;
+            init
             {
-                if (this.Hand[i].Rank == CardRank.JACK)
+                this.Runs = new();
+                Card? sequenceStart = null;
+                for (int i = 1; i < this.Hand.Length; i++)
                 {
-                    this.Hat.Add(this.Hand[i].Suit, 0);
-                }
-            }
-            for (int i = 0; i < this.Hand.Length; i++)
-            {
-                Suit thisSuit = this.Hand[i].Suit;
-                if (this.Hand[i].Rank != CardRank.JACK && this.Hat.Keys.Contains(thisSuit))
-                {
-                    this.Hat[thisSuit]++;
-                }
-            }
-        }
-        private void GetRuns()
-        {
-            Card? sequenceStart = null;
-            for (int i = 1; i < this.Hand.Length; i++)
-            {
-                Card sequenceEnd = this.Hand[i];
-                if (sequenceEnd.IsSequential(this.Hand[i - 1]))
-                {
-                    sequenceStart = this.Hand[i - 1];
-                }
-                else
-                {
-                    if (sequenceStart != null && sequenceEnd - sequenceStart > 2)
+                    Card sequenceEnd = this.Hand[i];
+                    if (sequenceEnd.IsSequential(this.Hand[i - 1]))
                     {
-                        this.Runs.Add(new int[] {
+                        sequenceStart = this.Hand[i - 1];
+                    }
+                    else
+                    {
+                        if (sequenceStart != null && sequenceEnd - sequenceStart > 2)
+                        {
+                            this.Runs.Add(new int[] {
                             sequenceStart.Rank.Value,
                             sequenceEnd.Rank.Value
                         });
+                        }
                     }
                 }
             }
         }
-        private bool Flush { get; set; }
-        private List<int[]> Runs { get; set; }
-        private Dictionary<Suit, int> Hat { get; set; } = new();
-
-
-
-
-        // TODO: replace AggregateValue two separate methods and put them in respective getters.
-        private int AggregateValue(int index)
+        private Dictionary<Suit, int> Hats 
         {
-            throw new NotImplementedException();
+            get => this.Hats;
+            init
+            {
+                this.Hats = new();
+                for (int i = 0; i < this.Hand.Length; i++)
+                {
+                    if (this.Hand[i].Rank == CardRank.JACK)
+                    {
+                        this.Hats.Add(this.Hand[i].Suit, 0);
+                    }
+                }
+                for (int i = 0; i < this.Hand.Length; i++)
+                {
+                    Suit thisSuit = this.Hand[i].Suit;
+                    if (this.Hand[i].Rank != CardRank.JACK && this.Hats.Keys.Contains(thisSuit))
+                    {
+                        this.Hats[thisSuit]++;
+                    }
+                }
+            }
         }
-
-
 
         // TODO: calculate fifteens with tree structure - use composite pattern
     }

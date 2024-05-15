@@ -2,7 +2,7 @@
 {
     public class Combination
     {
-        private int _drawCards { get => SuitUtil.Count * CardRank.Count - _hand.Length - _discard.Length; }
+        private int _drawCards { get => SuitUtil.Count * Rank.Count - _hand.Length - _discard.Length; }
         private readonly Card[] _hand;
         private readonly Card[] _discard;
         public Combination(Card[] hand, Card[] discard)
@@ -58,13 +58,13 @@
                 // if flush, add one for every possible draw card in suit
                 if (_flush)
                 {
-                    output += CardRank.Count - _hand.Count() - _discard.CountInSuit(_hand[0].Suit); ;
+                    output += Rank.Count - _hand.Count() - _discard.CountInSuit(_hand[0].Suit); ;
                 }
                 
                 // if any jacks present, add one for every possible draw card in suit
                 foreach (Suit suit in _hats.Keys)
                 {
-                    output += CardRank.Count - _hand.CountInSuit(suit) - _discard.CountInSuit(suit);
+                    output += Rank.Count - _hand.CountInSuit(suit) - _discard.CountInSuit(suit);
                 }
                 
                 // if possible to draw pair, trip or four-of-a-kind, add relevant number of points (2, 4, 6)
@@ -126,7 +126,7 @@
                 _hats = new();
                 for (int i = 0; i < _hand.Length; i++)
                 {
-                    if (_hand[i].Rank == CardRank.JACK)
+                    if (_hand[i].Rank == Rank.JACK)
                     {
                         _hats.Add(_hand[i].Suit, 0);
                     }
@@ -134,7 +134,7 @@
                 for (int i = 0; i < _hand.Length; i++)
                 {
                     Suit thisSuit = _hand[i].Suit;
-                    if (_hand[i].Rank != CardRank.JACK && _hats.Keys.Contains(thisSuit))
+                    if (_hand[i].Rank != Rank.JACK && _hats.Keys.Contains(thisSuit))
                     {
                         _hats[thisSuit]++;
                     }

@@ -1,21 +1,21 @@
 ﻿namespace Cribbage
 {
-    public class CardRank : IComparable
+    public class Rank : IComparable
     {
-        public static CardRank ACE = new("A", 1, 1);
-        public static CardRank TWO = new("2", 2, 2);
-        public static CardRank THREE = new("3", 3, 3);
-        public static CardRank FOUR = new("4", 4, 4);
-        public static CardRank FIVE = new("5", 5, 5);
-        public static CardRank SIX = new("6", 6, 6);
-        public static CardRank SEVEN = new("7", 7, 7);
-        public static CardRank EIGHT = new("8", 8, 8);
-        public static CardRank NINE = new("9", 9, 9);
-        public static CardRank TEN = new("10", 10, 10);
-        public static CardRank JACK = new("J", 10, 11);
-        public static CardRank QUEEN = new("Q", 10, 12);
-        public static CardRank KING = new("K", 10, 13);
-        private CardRank(string name, int pips, int value)
+        public static Rank ACE = new("A", 1, 1);
+        public static Rank TWO = new("2", 2, 2);
+        public static Rank THREE = new("3", 3, 3);
+        public static Rank FOUR = new("4", 4, 4);
+        public static Rank FIVE = new("5", 5, 5);
+        public static Rank SIX = new("6", 6, 6);
+        public static Rank SEVEN = new("7", 7, 7);
+        public static Rank EIGHT = new("8", 8, 8);
+        public static Rank NINE = new("9", 9, 9);
+        public static Rank TEN = new("10", 10, 10);
+        public static Rank JACK = new("J", 10, 11);
+        public static Rank QUEEN = new("Q", 10, 12);
+        public static Rank KING = new("K", 10, 13);
+        private Rank(string name, int pips, int value)
         {
             Name = name;
             Pips = pips;
@@ -25,16 +25,14 @@
         public string Name { get; set; }
         public int Pips { get; set; }
         public int Value { get; set; }
-
         public override string ToString()
         {
             return Name;
         }
-
         public int CompareTo(object? obj)
         {
             if (obj == null) return 1;
-            return Value.CompareTo(((CardRank)obj).Value);
+            return Value.CompareTo(((Rank)obj).Value);
         }
     }
 }

@@ -2,12 +2,12 @@
 {
     public class Card
     {
-        public Card(CardRank rank, Suit suit)
+        public Card(Rank rank, Suit suit)
         {
             this.Rank = rank;
             this.Suit = suit;
         }
-        public CardRank Rank { get; set; }
+        public Rank Rank { get; set; }
         public Suit Suit { get; set; }
         public static int operator +(Card lhs, Card rhs)
         {

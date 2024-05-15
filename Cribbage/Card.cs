@@ -36,6 +36,14 @@
         {
             return card.Rank.Value == target.Rank.Value;
         }
+        public static int CountInRank(this Card[] cards, int rank) 
+        {
+            return cards.Count(o => o.Rank.Value == rank);
+        }
+        public static int CountInSuit(this Card[] cards, Suit suit) 
+        {
+            return cards.Count(o => o.Suit == suit);
+        }
         public static Card[] Sort(this Card[] cards) 
         {
             Card[] output = new Card[cards.Length];

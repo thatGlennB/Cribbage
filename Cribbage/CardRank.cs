@@ -21,6 +21,7 @@
             Pips = pips;
             Value = value;
         }
+        public static int Count => 13;
         public string Name { get; set; }
         public int Pips { get; set; }
         public int Value { get; set; }

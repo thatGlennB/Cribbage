@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace Cribbage
+﻿namespace Cribbage
 {
     public class Combination
     {
@@ -10,64 +8,89 @@ namespace Cribbage
         private const int NUM_DRAW_CARDS = 46;
         private readonly Card[] Hand;
         private readonly Card[] Discard;
-        public Combination(Card[] hand, Card[] discard) 
+        public Combination(Card[] hand, Card[] discard)
         {
             Hand = hand.Sort();
             Discard = discard.Sort();
-            getReplicates();
             getFlush();
-            getHat();
+            getHats();
             GetRuns();
         }
-        public int ValueInHand => AggregateValue(0);
+        public int ValueInHand
+        {
+            get
+            {
+                int output = 0;
+                // flush is worth 4 points
+                if (Flush) output += 4;
+
+                // if N cards are of same rank, add N!
+                foreach (int rank in Hand.Select(o => o.Rank.Value).Distinct())
+                {
+                    int countInRank = Hand.CountInRank(rank);
+                    int product = 1;
+                    for (int i = 2; i <= countInRank; i++) 
+                    {
+                        product *= i;
+                    }
+                    output += product;
+                }
+
+                // runs?
+
+                // 15s?
+
+                throw new NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// The expected value added by the draw card.
         /// 
         /// The expected value is the sum of the value added by each possible draw, divided by the number of possible draws.
         /// </summary>
-        public double ExpectedDrawValue => (double)AggregateValue(1) / NUM_DRAW_CARDS;
-        private void getReplicates()
+        public double ExpectedDrawValue
         {
-            int replicates = 0;
-            for(int i = 1; i < this.Hand.Length; i++) 
+            get
             {
-                if (this.Hand[i].IsPair(this.Hand[i - 1]))
+                int output = 0;
+                int numSuits = Enum.GetNames(typeof(Suit)).Length;
+
+                // if flush, add one for every possible draw card in suit
+                if (Flush)
                 {
-                    replicates += 1;
+                    output += CardRank.Count - Hand.Count() - Discard.CountInSuit(Hand[0].Suit); ;
                 }
-                else 
+                
+                // if any jacks present, add one for every possible draw card in suit
+                foreach (Suit suit in Hat.Keys)
                 {
-                    switch (replicates) 
-                    {
-                        case 1:
-                            this.Pairs.Add(this.Hand[i - 1].Rank.Value);
-                            break;
-                        case 2:
-                            this.Trips.Add(this.Hand[i - 1].Rank.Value);
-                            break;
-                        case 3:
-                            this.FourOfAKind = this.Hand[i - 1].Rank.Value;
-                            break;
-                        default: break;
-                    }
-                    replicates = 0;
+                    output += CardRank.Count - Hand.CountInSuit(suit) - Discard.CountInSuit(suit);
                 }
+                
+                // if possible to draw pair, trip or four-of-a-kind, add relevant number of points (2, 4, 6)
+                foreach (int rank in Hand.Select(o => o.Rank.Value).Distinct())
+                {
+                    int countInRank = Hand.CountInRank(rank);
+                    output += (numSuits - Discard.CountInRank(rank) - countInRank) * 2 * countInRank;
+                }
+                
+                // runs? runs? how runs?
+                // dear lord, 15s
+                throw new NotImplementedException();
             }
         }
-        private void getFlush() 
+
+        // flush: every card in hand is the same suit
+        private void getFlush()
         {
-            this.Flush = true;
-            for (int i = 1; i < this.Hand.Length; i++) 
-            {
-                this.Flush = this.Hand[i].Suit == this.Hand[0].Suit && this.Flush;
-                if (!this.Flush) break;
-            }
+            this.Flush = this.Hand.CountInSuit(this.Hand[0].Suit) == this.Hand.Length;
         }
-        private void getHat() 
+        private void getHats()
         {
-            for (int i = 0; i < this.Hand.Length; i++) 
+            for (int i = 0; i < this.Hand.Length; i++)
             {
-                if (this.Hand[i].Rank == CardRank.JACK) 
+                if (this.Hand[i].Rank == CardRank.JACK)
                 {
                     this.Hat.Add(this.Hand[i].Suit, 0);
                 }
@@ -81,31 +104,28 @@ namespace Cribbage
                 }
             }
         }
-        private void GetRuns() 
+        private void GetRuns()
         {
             Card? sequenceStart = null;
-            for(int i = 1; i < this.Hand.Length; i++) 
+            for (int i = 1; i < this.Hand.Length; i++)
             {
                 Card sequenceEnd = this.Hand[i];
-                if (sequenceEnd.IsSequential( this.Hand[i - 1]))
+                if (sequenceEnd.IsSequential(this.Hand[i - 1]))
                 {
                     sequenceStart = this.Hand[i - 1];
                 }
-                else 
+                else
                 {
-                    if (sequenceStart != null && sequenceEnd - sequenceStart > 2) 
+                    if (sequenceStart != null && sequenceEnd - sequenceStart > 2)
                     {
-                        this.Runs.Add(new int[] { 
+                        this.Runs.Add(new int[] {
                             sequenceStart.Rank.Value,
-                            sequenceEnd.Rank.Value 
+                            sequenceEnd.Rank.Value
                         });
                     }
                 }
             }
         }
-        private List<int> Pairs { get; set; } = new();
-        private List<int> Trips { get; set; } = new();
-        private int FourOfAKind { get; set; }
         private bool Flush { get; set; }
         private List<int[]> Runs { get; set; }
         private Dictionary<Suit, int> Hat { get; set; } = new();
@@ -114,7 +134,7 @@ namespace Cribbage
 
 
         // TODO: replace AggregateValue two separate methods and put them in respective getters.
-        private int AggregateValue(int index) 
+        private int AggregateValue(int index)
         {
             throw new NotImplementedException();
         }

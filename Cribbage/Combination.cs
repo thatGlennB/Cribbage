@@ -31,7 +31,13 @@
                 }
 
                 // runs
-                foreach(int)
+                if (_runs[0] != 0) 
+                {
+                    for (int i = _runs[0]; i <= _runs[1]; i++) 
+                    {
+
+                    }
+                }
 
                 // 15s?
 

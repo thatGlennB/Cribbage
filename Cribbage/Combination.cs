@@ -12,8 +12,8 @@ namespace Cribbage
         private readonly Card[] Discard;
         public Combination(Card[] hand, Card[] discard) 
         {
-            Hand = SortCards(hand);
-            Discard = SortCards(discard);
+            Hand = hand.Sort();
+            Discard = discard.Sort();
             getReplicates();
             getFlush();
             getHat();
@@ -31,7 +31,7 @@ namespace Cribbage
             int replicates = 0;
             for(int i = 1; i < this.Hand.Length; i++) 
             {
-                if (this.Hand[i].Rank.Value == this.Hand[i - 1].Rank.Value)
+                if (this.Hand[i].IsPair(this.Hand[i - 1]))
                 {
                     replicates += 1;
                 }
@@ -83,19 +83,22 @@ namespace Cribbage
         }
         private void GetRuns() 
         {
-            int sequenceStart = 0;
+            Card? sequenceStart = null;
             for(int i = 1; i < this.Hand.Length; i++) 
             {
-                int sequenceEnd = this.Hand[i].Rank.Value;
-                if (sequenceEnd == this.Hand[i - 1].Rank.Value + 1)
+                Card sequenceEnd = this.Hand[i];
+                if (sequenceEnd.IsSequential( this.Hand[i - 1]))
                 {
-                    sequenceStart = this.Hand[i - 1].Rank.Value;
+                    sequenceStart = this.Hand[i - 1];
                 }
                 else 
                 {
-                    if (sequenceEnd - sequenceStart > 2) 
+                    if (sequenceStart != null && sequenceEnd - sequenceStart > 2) 
                     {
-                        this.Runs.Add(new int[] { sequenceStart, sequenceEnd });
+                        this.Runs.Add(new int[] { 
+                            sequenceStart.Rank.Value,
+                            sequenceEnd.Rank.Value 
+                        });
                     }
                 }
             }
@@ -116,32 +119,6 @@ namespace Cribbage
             throw new NotImplementedException();
         }
 
-
-        
-
-        private Card[] SortCards(Card[] cards) 
-        {
-            Card[] output = new Card[cards.Length];
-            for (int i = 0; i < cards.Length; i++) 
-            {
-                Card shunt = cards[i];
-                for (int j = 0; i < output.Length; j++) 
-                {
-                    if (output[j] == null)
-                    {
-                        output[j] = shunt;
-                    }
-                    // if shunt card is less than current occupant of output[j], then swap cards
-                    else if (shunt.Rank.CompareTo(output[j].Rank) < 0) 
-                    {
-                        Card hold = shunt;
-                        shunt = output[j];
-                        output[j] = hold;
-                    }
-                }
-            }
-            return output;
-        }
 
 
         // TODO: calculate fifteens with tree structure - use composite pattern

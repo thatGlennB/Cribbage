@@ -1,4 +1,6 @@
-﻿namespace Cribbage
+﻿using Cribbage.FifteenCount;
+
+namespace Cribbage
 {
     public class Combination
     {
@@ -33,15 +35,24 @@
                 // runs
                 if (_runs[0] != 0) 
                 {
+                    int span = _runs[1] - _runs[0] + 1;
                     for (int i = _runs[0]; i <= _runs[1]; i++) 
                     {
-
+                        span *= _hand.CountInRank(i);
                     }
+                    output += span;
                 }
 
                 // 15s?
+                RootNode counter = new RootNode(_hand.Select(o => o.Rank.Pips).ToList());
+                counter.Generate();
+                if (counter.HasEndpoint()) 
+                {
+                    output += 2 * counter.GetCombinations().Count();
+                }
 
-                throw new NotImplementedException();
+
+                return output;
             }
         }
         /// <summary>

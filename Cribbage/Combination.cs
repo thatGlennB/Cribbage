@@ -39,7 +39,7 @@ namespace Cribbage
                     }
                     if (!sequenceEnd.IsSequential(Hand[i - 1]) || i == Hand.Length -1 )
                     {
-                        if (sequenceStart != null && sequenceEnd - sequenceStart > 2)
+                        if (sequenceStart != null)
                         {
                             Runs[0] = sequenceStart.Rank.Value;
                             Runs[1] = sequenceEnd.Rank.Value;

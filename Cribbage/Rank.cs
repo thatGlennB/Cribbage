@@ -1,5 +1,8 @@
 ﻿namespace Cribbage
 {
+
+    // TODO: replace with enumerable - or figure out better way to implement Count and have implicit conversion to integer
+    // TODO: is Pips even necessary? I could have an extension method to convert rank to pips.
     public class Rank : IComparable
     {
         public static Rank ACE = new("A", 1, 1);

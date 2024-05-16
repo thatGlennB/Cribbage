@@ -24,28 +24,63 @@ namespace Cribbage
             }
 
             // runs
-            if (combination.Runs[0] != 0)
-            {
-                int span = combination.Runs[1] - combination.Runs[0] + 1;
-                for (int i = combination.Runs[0]; i <= combination.Runs[1]; i++)
-                {
-                    span *= combination.Hand.CountInRank(i);
-                }
-                output += span;
-            }
+            output += getRuns(combination);
 
             // 15s?
-            RootNode counter = new RootNode(combination.Hand.Select(o => o.Rank.Pips).ToList());
-            counter.Generate();
-            if (counter.HasEndpoint())
-            {
-                output += 2 * counter.GetCombinations().Count();
-            }
+            output += getFifteens(combination);
 
 
             return output;
         }
-        public int GetExpectedDrawValue(Combination combination) 
+
+        // TODO: make getFifteens and getRuns static
+        // TODO: convert draw to an enum value, once I replace Rank class with enum
+        private int getFifteens(Combination input, int draw = 0) 
+        {
+            int output = 0;
+            List<int> pips = input.Hand.Select(o => o.Rank.Pips).ToList();
+            if (draw > 0) 
+            {
+                if (draw <= 10) 
+                {
+                    pips.Add(draw);
+                }
+                else if (draw > 10 && draw < 14) 
+                {
+                    pips.Add(10);
+                } 
+                else
+                {
+                    throw new ArgumentOutOfRangeException(nameof(draw));
+                }
+            }
+            RootNode counter = new RootNode(pips);
+            counter.Generate();
+            if (counter.HasEndpoint())
+                output += 2 * counter.GetCombinations().Count();
+            return output;
+        }
+
+        private int getRuns(Combination input, int draw = 0) 
+        {
+            int output = 0;
+            if (input.Runs[0] != 0)
+            {
+                int min = draw > 0 && draw < input.Runs[0] ? draw : input.Runs[0];
+                int max = draw > input.Runs[1] ? draw : input.Runs[1];
+                int span = max - min + 1;
+                if (span > 2)
+                {
+                    for (int i = min; i <= max; i++)
+                    {
+                        span *= (input.Hand.CountInRank(i) + draw == i ? 1 : 0);
+                    }
+                    output += span;
+                }
+            }
+            return output;
+        }
+        public double GetExpectedDrawValue(Combination combination) 
         {
             int output = 0;
 
@@ -68,13 +103,26 @@ namespace Cribbage
                 output += (SuitUtil.Count - combination.Discard.CountInRank(rank) - countInRank) * 2 * countInRank;
             }
 
-            // runs? runs? how runs?
-            // dear lord, 15s
+            // for each possible rank of draw card...
+            for (int i = 1; i <= 13; i++) 
+            {
+                // determine number of possible draw
+                int rankDrawCards = (SuitUtil.Count - combination.Hand.CountInRank(i) - combination.Discard.CountInRank(i));
 
+                // determine value added by runs for this draw, multiplied by number of draw cards in rank
+                output += getRuns(combination, i) * rankDrawCards;
+
+                // determine value added by fifteens for this draw, multiplied by number of draw cards in rank
+                output += getFifteens(combination, i) * rankDrawCards;
+            }
+
+            // ...and subtract the value of each type which existed in the hand prior to the draw
+            // TODO: *** avoid repetition *** => 'runValueInHand' and 'fifteenValueInHand' are also calculated in GetHandValue.
+            int totalDrawCards = CardUtil.DrawCount(combination.Hand.Length + combination.Discard.Length);
+            output -= (getRuns(combination) - getFifteens(combination)) * totalDrawCards;
 
             // divide possible points by number of possible draws to get expected value
-            double dummyReturn = (double)output / CardUtil.DrawCount(combination.Hand.Length + combination.Discard.Length);
-            throw new NotImplementedException();
+            return (double)output / totalDrawCards;
         }
     }
 }

@@ -9,32 +9,20 @@
         }
         public Rank Rank { get; set; }
         public Suit Suit { get; set; }
-        public static int operator +(Card lhs, Card rhs)
-        {
-            return lhs.Rank.Pips + rhs.Rank.Pips;
-        }
-        public static int operator +(Card lhs, int rhs)
-        {
-            return lhs.Rank.Pips + rhs;
-        }
         public static int operator -(Card lhs, Card rhs)
         {
-            return lhs.Rank.Pips - rhs.Rank.Pips;
-        }
-        public static int operator -(Card lhs, int rhs)
-        {
-            return lhs.Rank.Pips - rhs;
+            return lhs.Rank.Value - rhs.Rank.Value;
         }
     }
     public static class CardUtil
     {
+        public static int DrawCount(int excludedCards) 
+        {
+            return SuitUtil.Count * Rank.Count - excludedCards;
+        }
         public static bool IsSequential(this Card card, Card target)
         {
             return Math.Abs(card.Rank.Value - target.Rank.Value) <= 1;
-        }
-        public static bool IsPair(this Card card, Card target)
-        {
-            return card.Rank.Value == target.Rank.Value;
         }
         public static int CountInRank(this Card[] cards, int rank) 
         {

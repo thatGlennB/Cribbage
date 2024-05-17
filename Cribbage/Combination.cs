@@ -11,7 +11,8 @@ namespace Cribbage
             Hand = hand.Sort();
             Discard = discard.Sort();           
         }
-                        /// <summary>
+        
+        /// <summary>
         /// returns true if all cards in hand are the same suit, i.e. a flush
         /// </summary>
         public bool Flush 
@@ -48,7 +49,8 @@ namespace Cribbage
                 }
             }
         }
-    /// <summary>
+        
+        /// <summary>
         /// Contains a dictionary, specifying the suits where a hat point is possible.
         /// Dictionary keys are the suits of each jack in the hand. Dictionary values are the number of cards (excluding jacks) of each suit in the hand.
         /// </summary>

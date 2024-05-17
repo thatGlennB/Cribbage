@@ -18,15 +18,15 @@
     {
         public static int DrawCount(int excludedCards) 
         {
-            return SuitUtil.Count * Rank.Count - excludedCards;
+            return SuitUtil.Count * Rank.Count() - excludedCards;
         }
         public static bool IsSequential(this Card card, Card target)
         {
-            return Math.Abs(card.Rank.Value - target.Rank.Value) <= 1;
+            return Math.Abs(card.Rank - target.Rank) <= 1;
         }
         public static int CountInRank(this Card[] cards, int rank) 
         {
-            return cards.Count(o => o.Rank.Value == rank);
+            return cards.Count(o => o.Rank == rank);
         }
         public static int CountInSuit(this Card[] cards, Suit suit) 
         {
@@ -55,5 +55,6 @@
             }
             return output;
         }
+        public static int Pips(this Card card) => card.Rank > 9 ? 10 : card.Rank;
     }
 }

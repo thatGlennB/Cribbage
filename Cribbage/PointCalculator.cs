@@ -38,22 +38,8 @@ namespace Cribbage
         private int getFifteens(Combination input, int draw = 0) 
         {
             int output = 0;
-            List<int> pips = input.Hand.Select(o => o.Rank.Pips).ToList();
-            if (draw > 0) 
-            {
-                if (draw <= 10) 
-                {
-                    pips.Add(draw);
-                }
-                else if (draw > 10 && draw < 14) 
-                {
-                    pips.Add(10);
-                } 
-                else
-                {
-                    throw new ArgumentOutOfRangeException(nameof(draw));
-                }
-            }
+            List<int> pips = input.Hand.Select(o => o.Pips()).ToList();
+            pips.Add(draw > 9 ? 10 : draw);
             RootNode counter = new RootNode(pips);
             counter.Generate();
             if (counter.HasEndpoint())
@@ -87,13 +73,14 @@ namespace Cribbage
             // if flush, add one for every possible draw card in suit
             if (combination.Flush)
             {
-                output += Rank.Count - combination.Hand.Count() - combination.Discard.CountInSuit(combination.Hand[0].Suit); ;
+                int countInSuit = Rank.Count() - combination.Hand.Count() - combination.Discard.CountInSuit(combination.Hand[0].Suit);
+                output +=  countInSuit;
             }
 
             // if any jacks present, add one for every possible draw card in suit
             foreach (Suit suit in combination.Hats.Keys)
             {
-                output += Rank.Count - combination.Hand.CountInSuit(suit) - combination.Discard.CountInSuit(suit);
+                output += Rank.Count() - combination.Hand.CountInSuit(suit) - combination.Discard.CountInSuit(suit);
             }
 
             // if possible to draw pair, trip or four-of-a-kind, add relevant number of points (2, 4, 6)

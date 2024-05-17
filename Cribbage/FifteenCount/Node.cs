@@ -1,23 +1,40 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Cribbage.FifteenCount
+﻿namespace Cribbage.FifteenCount
 {
     public interface IComposite
     {
         List<int[]> GetCombinations();
         bool HasEndpoint();
     }
-    public class RootNode : IComposite
+    public interface INonTerminatingNode
     {
-        protected readonly List<int> _residue;
-        protected List<IComposite> _children;
-        public RootNode(List<int> residue) 
-        { 
-            _residue = residue;
-            _children = new();
-        }
+        void Append(int residueElement);
+        void Generate();
+    }
+    public class EndPoint : IComposite
+    {
+        public EndPoint(int index) => _index = index;
+        private int _index;
+        public List<int[]> GetCombinations() => [[_index]];
+        public bool HasEndpoint() => true;
+    }
+    // TODO find a better name than "residue".
+    public class Node : IComposite, INonTerminatingNode
+    {
+        private readonly int _index;
+        private readonly int _sum;
+        private List<IComposite> _children;
+        private List<int> _residue;
 
-        public virtual List<int[]> GetCombinations()
+        public Node(List<int> residue, int index, int sum)
+        {
+            _index = index;
+            _sum = sum;
+            _children = new();
+            _residue = residue;
+        }
+        public Node(List<int> residue) : this(residue, 0, 0){ }
+
+        public List<int[]> GetCombinations()
         {
             List<int[]> output = new();
             foreach (IComposite child in _children)
@@ -25,61 +42,6 @@ namespace Cribbage.FifteenCount
                 if (child.HasEndpoint())
                 {
                     foreach (int[] combination in child.GetCombinations())
-                    {
-                        output.AddRange(child.GetCombinations());
-                    }
-                }
-            }
-            return output;
-        }
-        public virtual bool HasEndpoint()
-        {
-            foreach (IComposite child in _children)
-            {
-                if (child.HasEndpoint())
-                    return true;
-            }
-            return false;
-        }
-        public virtual void Generate() 
-        {
-            for(int i = 0; i < _residue.Count; i++) 
-            {
-                List<int> residue = _residue.Slice(i + 1, _residue.Count - i - 1);
-                int sum = _residue[i];
-                Node node = new Node(residue, i, sum);
-                node.Generate();
-                _children.Add(node);
-            }
-        }
-    }
-    public class EndPoint : IComposite 
-    {
-        public EndPoint(int index) => _index = index;
-        private int _index;
-        public List<int[]> GetCombinations() => [[_index]];
-        public bool HasEndpoint() => true;
-    }
-    // TODO inherit from RootNode class
-    public class Node : RootNode
-    {
-        private readonly int _index;
-        private readonly int _sum;
-
-        public Node(List<int> residue, int index, int sum):base(residue)
-        {
-            _index = index;
-            _sum = sum;
-        }
-
-        public override List<int[]> GetCombinations() 
-        {
-            List<int[]> output = new();
-            foreach (IComposite child in _children) 
-            {
-                if (child.HasEndpoint()) 
-                {
-                    foreach (int[] combination in child.GetCombinations()) 
                     {
                         int[] newCombination = new int[combination.Length + 1];
                         combination.CopyTo(newCombination, 0);
@@ -91,24 +53,58 @@ namespace Cribbage.FifteenCount
             return output;
         }
 
-        public override void Generate() 
+        public void Generate()
         {
-            for(int i = 0; i < _residue.Count; i++) 
+            for (int i = 0; i < _residue.Count; i++)
             {
-                int newIndex = _index + i + 1;
-                int newSum = _residue[i] + _sum;
-                if (newSum < 15 && i < _residue.Count - 1) 
+                IComposite? newNode = _createNode(i);
+                if(newNode != null) 
                 {
-                    List<int> newResidue = _residue.Slice(i + 1, _residue.Count - i - 1);
-                    Node newNode = new Node(newResidue, newIndex, newSum);
-                    newNode.Generate();
                     _children.Add(newNode);
                 }
-                else if (newSum == 15) 
+            }
+        }
+        public void Append(int residueElement)
+        {
+            for (int i = 0; i < _residue.Count; i++)
+            {
+                if (_residue[i] > residueElement && _children[i].GetType().GetInterface(nameof(INonTerminatingNode)) != null)
                 {
-                    _children.Add(new EndPoint(newIndex));
+                    ((INonTerminatingNode)_children[i]).Append(residueElement);
+                }
+                else 
+                {
+                    _residue.Insert(i, residueElement);
+                    _createNode(i);
+                    break;
                 }
             }
+        }
+
+        private IComposite? _createNode(int residueIndex) 
+        {
+            int newIndex = 1 + _index + residueIndex;
+            int newSum = _residue[residueIndex] + _sum;
+            if (newSum < 15 && residueIndex < _residue.Count - 1)
+            {
+                List<int> newResidue = _residue.Slice(residueIndex + 1, _residue.Count - residueIndex - 1);
+                return new Node(newResidue, newIndex, newSum);
+            }
+            else if (newSum == 15)
+            {
+                return new EndPoint(newIndex);
+            }
+            else return null;
+        }
+
+        public bool HasEndpoint()
+        {
+            foreach (IComposite child in _children)
+            {
+                if (child.HasEndpoint())
+                    return true;
+            }
+            return false;
         }
     }
 }

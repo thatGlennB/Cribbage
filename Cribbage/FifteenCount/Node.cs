@@ -4,6 +4,7 @@
     {
         List<int[]> GetCombinations();
         bool HasEndpoint();
+        IComposite Copy();
     }
     public interface INonTerminatingNode
     {
@@ -16,14 +17,22 @@
         private int _index;
         public List<int[]> GetCombinations() => [[_index]];
         public bool HasEndpoint() => true;
+        public IComposite Copy() => new EndPoint(_index);
     }
     // TODO find a better name than "residue".
     public class Node : IComposite, INonTerminatingNode
     {
-        private readonly int _index;
         private readonly int _sum;
+        private int _index;
         private List<IComposite> _children;
         private List<int> _residue;
+
+        public IComposite Copy() 
+        {
+            int[] copyResidue = new int[_residue.Count()];
+            _residue.CopyTo(copyResidue);
+            return new Node(copyResidue.ToList(), _index, _sum);
+        }
 
         public Node(List<int> residue, int index, int sum)
         {
@@ -31,8 +40,10 @@
             _sum = sum;
             _children = new();
             _residue = residue;
+            _residue.Sort();
+            Generate();
         }
-        public Node(List<int> residue) : this(residue, 0, 0){ }
+        public Node(List<int> residue) : this(residue, -1, 0){ }
 
         public List<int[]> GetCombinations()
         {
@@ -43,10 +54,18 @@
                 {
                     foreach (int[] combination in child.GetCombinations())
                     {
-                        int[] newCombination = new int[combination.Length + 1];
-                        combination.CopyTo(newCombination, 0);
-                        newCombination[combination.Length] = _index;
-                        output.Add(newCombination);
+                        // TODO refactor
+                        if (_index >= 0)
+                        {
+                            int[] newCombination = new int[combination.Length + 1];
+                            combination.CopyTo(newCombination, 0);
+                            newCombination[combination.Length] = _index;
+                            output.Add(newCombination);
+                        }
+                        else
+                        {
+                            output.Add(combination);
+                        }
                     }
                 }
             }
@@ -55,30 +74,26 @@
 
         public void Generate()
         {
+            _children.Clear();
+            _residue.Sort();
+            _residue.Reverse();
             for (int i = 0; i < _residue.Count; i++)
             {
                 IComposite? newNode = _createNode(i);
                 if(newNode != null) 
                 {
+                    if (!newNode.IsTerminating()) 
+                    {
+                        ((INonTerminatingNode)newNode).Generate();
+                    }
                     _children.Add(newNode);
                 }
             }
         }
         public void Append(int residueElement)
         {
-            for (int i = 0; i < _residue.Count; i++)
-            {
-                if (_residue[i] > residueElement && _children[i].GetType().GetInterface(nameof(INonTerminatingNode)) != null)
-                {
-                    ((INonTerminatingNode)_children[i]).Append(residueElement);
-                }
-                else 
-                {
-                    _residue.Insert(i, residueElement);
-                    _createNode(i);
-                    break;
-                }
-            }
+            _residue.Add(residueElement);
+            Generate();
         }
 
         private IComposite? _createNode(int residueIndex) 
@@ -105,6 +120,13 @@
                     return true;
             }
             return false;
+        }
+    }
+    public static class NodeUtil
+    {
+        public static bool IsTerminating(this IComposite node) 
+        {
+            return node.GetType().GetInterface(nameof(INonTerminatingNode)) == null;
         }
     }
 }

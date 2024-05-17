@@ -40,7 +40,7 @@ namespace Cribbage
             int output = 0;
             List<int> pips = input.Hand.Select(o => o.Pips()).ToList();
             pips.Add(draw > 9 ? 10 : draw);
-            RootNode counter = new RootNode(pips);
+            Node counter = new Node(pips);
             counter.Generate();
             if (counter.HasEndpoint())
                 output += 2 * counter.GetCombinations().Count();

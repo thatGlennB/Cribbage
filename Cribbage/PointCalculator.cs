@@ -38,10 +38,10 @@ namespace Cribbage
         private int getFifteens(Combination input, int draw = 0) 
         {
             int output = 0;
-            List<int> pips = input.Hand.Select(o => o.Pips()).ToList();
+            List<int> pips = input.Hand.Select(o => o.Value).ToList();
             pips.Add(draw > 9 ? 10 : draw);
             Node counter = new Node(pips);
-            counter.Generate();
+            counter.Regenerate();
             if (counter.HasEndpoint())
                 output += 2 * counter.GetCombinations().Count();
             return output;

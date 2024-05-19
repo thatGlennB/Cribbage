@@ -1,132 +1,68 @@
 ﻿namespace Cribbage.FifteenCount
 {
-    public interface IComposite
+    public class Node : IObserver<List<Card>>, IDisposable
     {
-        List<int[]> GetCombinations();
-        bool HasEndpoint();
-        IComposite Copy();
-    }
-    public interface INonTerminatingNode
-    {
-        void Append(int residueElement);
-        void Generate();
-    }
-    public class EndPoint : IComposite
-    {
-        public EndPoint(int index) => _index = index;
-        private int _index;
-        public List<int[]> GetCombinations() => [[_index]];
-        public bool HasEndpoint() => true;
-        public IComposite Copy() => new EndPoint(_index);
-    }
-    // TODO find a better name than "residue".
-    public class Node : IComposite, INonTerminatingNode
-    {
-        private readonly int _sum;
-        private int _index;
-        private List<IComposite> _children;
-        private List<int> _residue;
-
-        public IComposite Copy() 
+        private readonly List<Card> _combination;
+        private readonly Combinations _output;
+        private List<Node> _children { get; set; }
+        private List<Card> _cards { get; set; }
+        public Card Card { get => _combination.Last(); }
+        public Node(List<Card> combination, Combinations output, List<Card> cards) 
         {
-            int[] copyResidue = new int[_residue.Count()];
-            _residue.CopyTo(copyResidue);
-            return new Node(copyResidue.ToList(), _index, _sum);
-        }
-
-        public Node(List<int> residue, int index, int sum)
-        {
-            _index = index;
-            _sum = sum;
+            _combination = combination;
             _children = new();
-            _residue = residue;
-            _residue.Sort();
-            Generate();
+            _cards = cards;
+            _output = output;
+            _updateChildren();
         }
-        public Node(List<int> residue) : this(residue, -1, 0){ }
 
-        public List<int[]> GetCombinations()
+        // TODO: observer and combinations should be singletons
+        // create or destroy children depending on cards observable
+        private void _updateChildren() 
         {
-            List<int[]> output = new();
-            foreach (IComposite child in _children)
+            foreach (Node child in _children) 
             {
-                if (child.HasEndpoint())
+                if (!_cards.Contains(child.Card)) 
                 {
-                    foreach (int[] combination in child.GetCombinations())
-                    {
-                        // TODO refactor
-                        if (_index >= 0)
-                        {
-                            int[] newCombination = new int[combination.Length + 1];
-                            combination.CopyTo(newCombination, 0);
-                            newCombination[combination.Length] = _index;
-                            output.Add(newCombination);
-                        }
-                        else
-                        {
-                            output.Add(combination);
-                        }
-                    }
+                    child.Dispose();
+                    _children.Remove(child);
                 }
             }
-            return output;
-        }
-
-        public void Generate()
-        {
-            _children.Clear();
-            _residue.Sort();
-            _residue.Reverse();
-            for (int i = 0; i < _residue.Count; i++)
+            foreach(Card card in _cards)
             {
-                IComposite? newNode = _createNode(i);
-                if(newNode != null) 
+                if (!_children.Select(o => o.Card).Contains(card) &&
+                    Card.CompareTo(card) > 0 &&
+                    Card != card &&
+                    _combination.Select(o => o.Value).Sum() + card.Value < 15) 
                 {
-                    if (!newNode.IsTerminating()) 
-                    {
-                        ((INonTerminatingNode)newNode).Generate();
-                    }
-                    _children.Add(newNode);
+                    _children.Add(new Node(_combination.Append(card).ToList(), _output, _cards));
                 }
             }
         }
-        public void Append(int residueElement)
+        public void OnCompleted()
         {
-            _residue.Add(residueElement);
-            Generate();
+            throw new NotImplementedException();
         }
 
-        private IComposite? _createNode(int residueIndex) 
+        public void OnError(Exception error)
         {
-            int newIndex = 1 + _index + residueIndex;
-            int newSum = _residue[residueIndex] + _sum;
-            if (newSum < 15 && residueIndex < _residue.Count - 1)
-            {
-                List<int> newResidue = _residue.Slice(residueIndex + 1, _residue.Count - residueIndex - 1);
-                return new Node(newResidue, newIndex, newSum);
-            }
-            else if (newSum == 15)
-            {
-                return new EndPoint(newIndex);
-            }
-            else return null;
+            throw new NotImplementedException();
         }
 
-        public bool HasEndpoint()
+        public void OnNext(List<Card> value)
         {
-            foreach (IComposite child in _children)
-            {
-                if (child.HasEndpoint())
-                    return true;
-            }
-            return false;
+            _cards = value;
+            _updateChildren() ;
         }
-    }
-    public static class NodeUtil
-    {
-        public static bool IsTerminating(this IComposite node) 
+
+        public void Dispose()
         {
-            return node.GetType().GetInterface(nameof(INonTerminatingNode)) == null;
+            foreach (Node child in _children) 
+            {
+                child.Dispose();
+                _children.Remove(child);
+            }
+            _output.Remove(_combination);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Cribbage
 {
-    public class Card
+    public class Card : IComparable<Card>
     {
         public Card(Rank rank, Suit suit)
         {
@@ -9,6 +9,19 @@
         }
         public Rank Rank { get; set; }
         public Suit Suit { get; set; }
+        public int Value { get => Rank > 9 ? 10 : Rank; }
+
+        public int CompareTo(Card? other)
+        {
+            if(other == null) return 1;
+            int rankComparison = this.Rank.CompareTo(other.Rank);
+            if (rankComparison == 0)
+            {
+                return this.Suit.CompareTo(other.Suit);
+            }
+            return rankComparison;
+        }
+
         public static int operator -(Card lhs, Card rhs)
         {
             return lhs.Rank.Value - rhs.Rank.Value;
@@ -55,6 +68,5 @@
             }
             return output;
         }
-        public static int Pips(this Card card) => card.Rank > 9 ? 10 : card.Rank;
     }
 }

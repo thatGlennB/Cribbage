@@ -2,17 +2,28 @@
 
 namespace Cribbage.FifteenCount
 {
-    public class CardsObservable : IObservable<List<Card>>
+    public sealed class CardsObservable : IObservable<List<Card>>
     {
-        private List<Card> _cards;
-        public List<IObserver<List<Card>>> _observers;
-
-
-        public CardsObservable(List<Card> cards)
+        private static readonly object _lock = new object();
+        private CardsObservable() { }
+        private static CardsObservable _instance = null!;
+        public static CardsObservable Instance 
         {
-            _cards = cards;
-            _observers = new();
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new CardsObservable();
+                    }
+                    return _instance;
+                }
+            }
         }
+
+        private List<Card> _cards;
+        public List<IObserver<List<Card>>> _observers = new();
 
         public void Add(Card card)
         {
@@ -26,6 +37,18 @@ namespace Cribbage.FifteenCount
             }
 
         }
+
+        public void Add(List<Card> cards) 
+        {
+            foreach (Card card in cards) 
+            {
+                Add(card);
+            }
+        }
+
+        public bool Contains(Card card) => _cards.Contains(card);
+
+        public int Count => _cards.Count;
 
         public void Remove(Card card)
         {
@@ -42,7 +65,10 @@ namespace Cribbage.FifteenCount
         public IDisposable Subscribe(IObserver<List<Card>> observer)
         {
             if (!_observers.Contains(observer))
+            {
                 _observers.Add(observer);
+                observer.OnNext(_cards);
+            }
             return new Unsubscriber<List<Card>>(_observers, observer);
         }
     }

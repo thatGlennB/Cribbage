@@ -3,16 +3,15 @@
     public class Node : IObserver<List<Card>>, IDisposable
     {
         private readonly List<Card> _combination;
-        private readonly Combinations _output;
+        private readonly Combinations _output = Combinations.Instance;
         private List<Node> _children { get; set; }
         private List<Card> _cards { get; set; }
         public Card Card { get => _combination.Last(); }
-        public Node(List<Card> combination, Combinations output, List<Card> cards) 
+        public Node(List<Card> combination, List<Card> cards) 
         {
             _combination = combination;
             _children = new();
             _cards = cards;
-            _output = output;
             _updateChildren();
         }
 
@@ -35,7 +34,7 @@
                     Card != card &&
                     _combination.Select(o => o.Value).Sum() + card.Value < 15) 
                 {
-                    _children.Add(new Node(_combination.Append(card).ToList(), _output, _cards));
+                    _children.Add(new Node(_combination.Append(card).ToList(), _cards));
                 }
             }
         }

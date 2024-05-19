@@ -22,17 +22,17 @@ namespace Cribbage.FifteenCount
             }
         }
 
-        private List<Card> _cards;
+        public List<Card> Cards = new();
         public List<IObserver<List<Card>>> _observers = new();
 
         public void Add(Card card)
         {
-            if (!_cards.Contains(card))
+            if (!Cards.Contains(card))
             {
-                _cards.Add(card);
+                Cards.Add(card);
                 foreach (IObserver<List<Card>> observer in _observers)
                 {
-                    observer.OnNext(_cards);
+                    observer.OnNext(Cards);
                 }
             }
 
@@ -46,18 +46,18 @@ namespace Cribbage.FifteenCount
             }
         }
 
-        public bool Contains(Card card) => _cards.Contains(card);
+        public bool Contains(Card card) => Cards.Contains(card);
 
-        public int Count => _cards.Count;
+        public int Count => Cards.Count;
 
         public void Remove(Card card)
         {
-            if (_cards.Contains(card))
+            if (Cards.Contains(card))
             {
-                _cards.Remove(card);
+                Cards.Remove(card);
                 foreach (IObserver<List<Card>> observer in _observers)
                 {
-                    observer.OnNext(_cards);
+                    observer.OnNext(Cards);
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace Cribbage.FifteenCount
             if (!_observers.Contains(observer))
             {
                 _observers.Add(observer);
-                observer.OnNext(_cards);
+                observer.OnNext(Cards);
             }
             return new Unsubscriber<List<Card>>(_observers, observer);
         }

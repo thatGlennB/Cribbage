@@ -27,7 +27,7 @@ namespace Cribbage
             output += getRuns(combination);
 
             // 15s?
-            output += getFifteens(combination);
+            //output += getFifteens(combination);
 
 
             return output;
@@ -35,17 +35,17 @@ namespace Cribbage
 
         // TODO: make getFifteens and getRuns static
         // TODO: convert draw to an enum value, once I replace Rank class with enum
-        private int getFifteens(Combination input, int draw = 0) 
-        {
-            int output = 0;
-            List<int> pips = input.Hand.Select(o => o.Value).ToList();
-            pips.Add(draw > 9 ? 10 : draw);
-            Node counter = new Node(pips);
-            counter.Regenerate();
-            if (counter.HasEndpoint())
-                output += 2 * counter.GetCombinations().Count();
-            return output;
-        }
+        //private int getFifteens(Combination input, int draw = 0) 
+        //{
+        //    int output = 0;
+        //    List<int> pips = input.Hand.Select(o => o.Value).ToList();
+        //    pips.Add(draw > 9 ? 10 : draw);
+        //    Node counter = new Node(pips);
+        //    counter.Regenerate();
+        //    if (counter.HasEndpoint())
+        //        output += 2 * counter.GetCombinations().Count();
+        //    return output;
+        //}
 
         private int getRuns(Combination input, int draw = 0) 
         {
@@ -100,13 +100,13 @@ namespace Cribbage
                 output += getRuns(combination, i) * rankDrawCards;
 
                 // determine value added by fifteens for this draw, multiplied by number of draw cards in rank
-                output += getFifteens(combination, i) * rankDrawCards;
+                //output += getFifteens(combination, i) * rankDrawCards;
             }
 
             // ...and subtract the value of each type which existed in the hand prior to the draw
             // TODO: *** avoid repetition *** => 'runValueInHand' and 'fifteenValueInHand' are also calculated in GetHandValue.
             int totalDrawCards = CardUtil.DrawCount(combination.Hand.Length + combination.Discard.Length);
-            output -= (getRuns(combination) - getFifteens(combination)) * totalDrawCards;
+            //output -= (getRuns(combination) - getFifteens(combination)) * totalDrawCards;
 
             // divide possible points by number of possible draws to get expected value
             return (double)output / totalDrawCards;

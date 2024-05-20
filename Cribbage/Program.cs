@@ -4,14 +4,14 @@ using Cribbage.FifteenCount;
 
 Console.WriteLine("Hello, World!");
 
-List<Card> cards = new();
+HashSet<Card> cards = new();
 cards.Add(new Card(Rank.TEN, Suit.HEARTS));
 cards.Add(new Card(Rank.TEN, Suit.SPADES));
 cards.Add(new Card(Rank.NINE, Suit.HEARTS));
 cards.Add(new Card(Rank.FIVE, Suit.HEARTS));
 
 
-List<Card> bcards = new();
+HashSet<Card> bcards = new();
 bcards.Add(new Card(Rank.EIGHT, Suit.HEARTS));
 bcards.Add(new Card(Rank.EIGHT, Suit.SPADES));
 bcards.Add(new Card(Rank.SEVEN, Suit.HEARTS));
@@ -19,7 +19,7 @@ bcards.Add(new Card(Rank.SEVEN, Suit.SPADES));
 
 
 
-List<Card> ccards = new();
+HashSet<Card> ccards = new();
 ccards.Add(new Card(Rank.TEN, Suit.HEARTS));
 ccards.Add(new Card(Rank.TWO, Suit.SPADES));
 ccards.Add(new Card(Rank.THREE, Suit.HEARTS));
@@ -37,7 +37,7 @@ void printResult(Root root)
     Console.Write(String.Join(", ", root.Cards.Select(o => outRS(o))));
     Console.Write("\n");
     Console.WriteLine(titleLine("Ways to make fifteen"));
-    foreach (List<Card> combo in root.Set) 
+    foreach (HashSet<Card> combo in root.Set) 
     {
         Console.WriteLine(String.Join(", ", combo.Select(o => outRS(o))));
     }

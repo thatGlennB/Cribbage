@@ -1,10 +1,10 @@
 ﻿namespace Cribbage.FifteenCount
 {
-    public sealed class Unsubscriber<T> : IDisposable
+    public sealed class Subscriber<T> : IDisposable
     {
-        private readonly IList<IObserver<T>> _observers;
+        private readonly ISet<IObserver<T>> _observers;
         private readonly IObserver<T> _observer;
-        public Unsubscriber(IList<IObserver<T>> observers, IObserver<T> observer)
+        public Subscriber(ISet<IObserver<T>> observers, IObserver<T> observer)
         {
             _observer = observer;
             _observers = observers;

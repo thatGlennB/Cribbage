@@ -2,35 +2,19 @@
 
 namespace Cribbage.FifteenCount
 {
-    public sealed class CardsObservable : IObservable<List<Card>>
+    public sealed class CardsObservable : IObservable<ISet<Card>>
     {
-        private static readonly object _lock = new object();
-        private CardsObservable() { }
-        private static CardsObservable _instance = null!;
-        public static CardsObservable Instance 
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new CardsObservable();
-                    }
-                    return _instance;
-                }
-            }
-        }
+        public CardsObservable() { }
 
-        public List<Card> Cards = new();
-        public List<IObserver<List<Card>>> _observers = new();
+        public ISet<Card> Cards = new HashSet<Card>();
+        public ISet<IObserver<ISet<Card>>> _observers = new HashSet<IObserver<ISet<Card>>>();
 
         public void Add(Card card)
         {
             if (!Cards.Contains(card))
             {
                 Cards.Add(card);
-                foreach (IObserver<List<Card>> observer in _observers)
+                foreach (IObserver<ISet<Card>> observer in _observers)
                 {
                     observer.OnNext(Cards);
                 }
@@ -38,7 +22,7 @@ namespace Cribbage.FifteenCount
 
         }
 
-        public void Add(List<Card> cards) 
+        public void Add(ISet<Card> cards) 
         {
             foreach (Card card in cards) 
             {
@@ -55,21 +39,21 @@ namespace Cribbage.FifteenCount
             if (Cards.Contains(card))
             {
                 Cards.Remove(card);
-                foreach (IObserver<List<Card>> observer in _observers)
+                foreach (IObserver<ISet<Card>> observer in _observers)
                 {
                     observer.OnNext(Cards);
                 }
             }
         }
 
-        public IDisposable Subscribe(IObserver<List<Card>> observer)
+        public IDisposable Subscribe(IObserver<ISet<Card>> observer)
         {
             if (!_observers.Contains(observer))
             {
                 _observers.Add(observer);
                 observer.OnNext(Cards);
             }
-            return new Unsubscriber<List<Card>>(_observers, observer);
+            return new Subscriber<ISet<Card>>(_observers, observer);
         }
     }
 }

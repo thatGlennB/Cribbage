@@ -2,21 +2,22 @@
 
 namespace Cribbage.FifteenCount
 {
-    public class Node : IObserver<List<Card>>, IDisposable
+    public class Node : IObserver<ISet<Card>>, IDisposable
     {
-        private readonly List<Card> _combination;
-        private readonly Combinations _output = Combinations.Instance;
+        private readonly ISet<Card> _combination;
+        private readonly Combinations _output;
         private readonly CardsObservable _cardsObservable;
-        private List<Node> _children { get; set; }
-        private List<Card> _cards { get; set; }
+        private ISet<Node> _children { get; set; }
+        private ISet<Card> _cards { get; set; }
         private readonly IDisposable _unsubscriber;
         public Card Card { get => _combination.Last(); }
-        public Node(List<Card> combination) 
+        public Node(ISet<Card> combination, CardsObservable cardsObservable, Combinations combinations) 
         {
             _combination = combination;
-            _children = new();
-            _cards = new List<Card>();
-            _cardsObservable = CardsObservable.Instance;
+            _children = new HashSet<Node>();
+            _cards = new HashSet<Card>();
+            _cardsObservable = cardsObservable;
+            _output = combinations;
             _unsubscriber = _cardsObservable.Subscribe(this);
         }
 
@@ -37,10 +38,10 @@ namespace Cribbage.FifteenCount
                     Card != card) 
                 {
                     int sum = _combination.Select(o => o.Value).Sum() + card.Value;
-                    List<Card> newCombination = _combination.Append(card).ToList();
+                    HashSet<Card> newCombination = _combination.Append(card).ToHashSet();
                     if (sum < 15) 
                     {
-                        _children.Add(new Node(newCombination));
+                        _children.Add(new Node(newCombination, _cardsObservable, _output));
                     }
                     else if (sum == 15) 
                     {
@@ -59,7 +60,7 @@ namespace Cribbage.FifteenCount
             throw new NotImplementedException();
         }
 
-        public void OnNext(List<Card> value)
+        public void OnNext(ISet<Card> value)
         {
             _cards = value;
             _updateChildren() ;

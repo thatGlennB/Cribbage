@@ -1,6 +1,4 @@
-﻿
-
-namespace Cribbage.FifteenCount
+﻿namespace Cribbage.FifteenCount
 {
     public sealed class CardsObservable : IObservable<ISet<Card>>
     {
@@ -57,11 +55,3 @@ namespace Cribbage.FifteenCount
         }
     }
 }
-
-
-
-// three objects: root node, cards observable, combinations dump
-
-// Nodes are the observers, stem is the observable, emitting a list of cards!
-// OnNext: compare children's cards to list of cards, create new children for any new cards (if sum less than 15), or delete children if not in list.
-// Update method updates list of combinations (and therefore point total)

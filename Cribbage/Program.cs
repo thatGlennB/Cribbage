@@ -6,37 +6,28 @@ Console.WriteLine("Hello, World!");
 
 HashSet<Card> cards = new();
 cards.Add(new Card(Rank.TEN, Suit.HEARTS));
-cards.Add(new Card(Rank.TEN, Suit.SPADES));
-cards.Add(new Card(Rank.NINE, Suit.HEARTS));
+cards.Add(new Card(Rank.FOUR, Suit.SPADES));
+cards.Add(new Card(Rank.SIX, Suit.HEARTS));
 cards.Add(new Card(Rank.FIVE, Suit.HEARTS));
 
 
-HashSet<Card> bcards = new();
-bcards.Add(new Card(Rank.EIGHT, Suit.HEARTS));
-bcards.Add(new Card(Rank.EIGHT, Suit.SPADES));
-bcards.Add(new Card(Rank.SEVEN, Suit.HEARTS));
-bcards.Add(new Card(Rank.SEVEN, Suit.SPADES));
+printNewHand(cards);
+printResult(cards, Mode.RUNS);
+printResult(cards, Mode.FIFTEENS);
+printResult(cards, Mode.PAIRS);
 
 
-
-HashSet<Card> ccards = new();
-ccards.Add(new Card(Rank.TEN, Suit.HEARTS));
-ccards.Add(new Card(Rank.TWO, Suit.SPADES));
-ccards.Add(new Card(Rank.THREE, Suit.HEARTS));
-ccards.Add(new Card(Rank.FIVE, Suit.HEARTS));
-
-Root root = new Root(ccards);
-
-printResult(root);
-
-
-void printResult(Root root) 
+void printNewHand(ISet<Card> cards) 
 {
     Console.WriteLine(titleLine("new hand"));
     Console.Write("Cards in Hand: ");
-    Console.Write(String.Join(", ", root.Cards.Select(o => outRS(o))));
+    Console.Write(string.Join(", ", cards.Select(o => outRS(o))));
     Console.Write("\n");
-    Console.WriteLine(titleLine("Ways to make fifteen"));
+}
+void printResult(ISet<Card> cards, Mode mode) 
+{
+    Root root = new Root(cards, mode);
+    Console.WriteLine(titleLine("Ways to make "+root.Mode.ToString()));
     foreach (HashSet<Card> combo in root.Set) 
     {
         Console.WriteLine(String.Join(", ", combo.Select(o => outRS(o))));

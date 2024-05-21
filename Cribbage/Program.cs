@@ -2,31 +2,77 @@
 
 using Cribbage;
 using Cribbage.FifteenCount;
-using System.Reflection;
 
 Console.WriteLine("Hello, World!");
 
-HashSet<Card> cards = new();
+//Console.WriteLine("\tKey\tKeyChar\tModifiers");
+//int i = 0;
+//do 
+//{
+//    ConsoleKeyInfo cki = Console.ReadKey();
+//    Console.WriteLine($"\t{cki.Key.ToString()}\t{cki.KeyChar.ToString()}\t{cki.Modifiers.ToString()}");
+//    if (cki.Key == ConsoleKey.Escape) break;
+//} while (i++ < 100);
 
-cards.Add(new Card(Rank.ACE, Suit.HEARTS));
-cards.Add(new Card(Rank.ACE, Suit.SPADES));
-cards.Add(new Card(Rank.KING, Suit.DIAMONDS));
-cards.Add(new Card(Rank.KING, Suit.CLUBS));
-cards.Add(new Card(Rank.KING, Suit.HEARTS));
-cards.Add(new Card(Rank.KING, Suit.SPADES));
+Card? selected = null;
 
-Calculator calc = new Calculator(cards);
-
-foreach (Selection selection in calc.Selections) 
+while (true)
 {
-    Console.Write(string.Join(",",selection.Hand.Select(o => o.Rank.ToString() + o.Suit.ToString().Substring(0,1))));
-    Console.Write("\t" + string.Join(",", selection.Discard.Select(o => o.Rank.ToString() + o.Suit.ToString().Substring(0, 1))));
-    Console.Write($"\t{selection.HandValue}");
-    Console.Write($"\t{selection.DiscardValue}");
-    Console.Write($"\t{selection.ExpectedValue.ToString("#.##")}\n");
+    Console.Clear();
+	Console.WriteLine("Select a card by typing in a rank [A, 2, 3, ... K] and a suit [H, C, D, S]. (eg. 6S = 6 of spades)");
+    string? line = Console.ReadLine();
+	if (line == null || line == "Q" || line.Length < 1) 
+	{
+		break;
+	}
+	string strRank = line.Substring(0, line.Length - 1);
+	char chrSuit = line.Substring(line.Length - 1).ToCharArray().First();
+	string[] validRanks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+	char[] validSuits = ['H', 'D', 'C', 'S'];
+	if (!validRanks.Contains(strRank))
+	{
+		Console.WriteLine($"Input not recognized: {strRank} is not a valid rank");
+	}
+	else if (!validSuits.Contains(chrSuit))
+	{
+		Console.WriteLine($"Input not recognized: {chrSuit} is not a valid suit");
+	}
+	else 
+	{
+		Console.WriteLine($"Card selected: {strRank}{chrSuit.ToString()}\nAdd to hand?(Y/N)");
+    }
+	Console.WriteLine("Press esc to quit or any other key to continue");
+    ConsoleKeyInfo cki = Console.ReadKey();
+    if (cki.Key == ConsoleKey.Escape) break;
 }
 
-Console.WriteLine("");
+
+
+
+Console.WriteLine("\nEND");
+Console.ReadKey();
+
+
+//HashSet<Card> cards = new();
+
+//cards.Add(new Card(Rank.ACE, Suit.HEARTS));
+//cards.Add(new Card(Rank.ACE, Suit.SPADES));
+//cards.Add(new Card(Rank.KING, Suit.DIAMONDS));
+//cards.Add(new Card(Rank.KING, Suit.CLUBS));
+//cards.Add(new Card(Rank.KING, Suit.HEARTS));
+//cards.Add(new Card(Rank.KING, Suit.SPADES));
+
+//Calculator calc = new Calculator(cards);
+
+//foreach (Selection selection in calc.Selections) 
+//{
+//    Console.Write(string.Join(",",selection.Hand.Select(o => o.Rank.ToString() + o.Suit.ToString().Substring(0,1))));
+//    Console.Write("\t" + string.Join(",", selection.Discard.Select(o => o.Rank.ToString() + o.Suit.ToString().Substring(0, 1))));
+//    Console.Write($"\t{selection.HandValue}");
+//    Console.Write($"\t{selection.DiscardValue}");
+//    Console.Write($"\t{selection.ExpectedValue.ToString("#.##")}\n");
+//}
+
 
 /* TODO: "selection" object containing:
  *  - register object

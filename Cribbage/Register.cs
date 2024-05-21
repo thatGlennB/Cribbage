@@ -1,4 +1,4 @@
-﻿namespace Cribbage.FifteenCount
+﻿namespace Cribbage
 {
     // TODO: replace list with more appropriate string holder
     // stringbuilder? streamwriter? not sure...

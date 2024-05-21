@@ -1,4 +1,4 @@
-﻿namespace Cribbage.FifteenCount
+﻿namespace Cribbage
 {
     public enum Mode : ushort
     {
@@ -27,7 +27,7 @@
                 case Mode.FIFTEENS:
                     return node._combination.Select(o => o.Value).Sum() + card.Value == 15;
                 case Mode.RUNS:
-                    return 
+                    return
                         node._combination.Any(o => o.Rank == card.Rank + 1) &&
                         node._combination.Any(o => o.Rank == card.Rank + 2) &&
                         !node._cards.Any(o => o.Rank == card.Rank - 1);

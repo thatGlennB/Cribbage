@@ -1,4 +1,4 @@
-﻿namespace Cribbage.FifteenCount
+﻿namespace Cribbage
 {
     public sealed class Subscriber<T> : IDisposable
     {

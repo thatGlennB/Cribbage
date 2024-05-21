@@ -1,9 +1,9 @@
-﻿namespace Cribbage.FifteenCount
+﻿namespace Cribbage
 {
     public class Calculator
     {
         public ISet<Selection> Selections { get; private set; } = new HashSet<Selection>();
-        public Calculator(ISet<Card> cards) 
+        public Calculator(ISet<Card> cards)
         {
             if (cards.Count == 5)
             {
@@ -14,15 +14,18 @@
                     Selections.Add(new Selection(hand, discard));
                 }
             }
-            else if (cards.Count == 6) 
+            else if (cards.Count == 6)
             {
-                foreach (Card card in cards) 
+                foreach (Card card in cards)
                 {
-                    foreach (Card secondCard in cards.Where(o => o != card)) 
+                    foreach (Card secondCard in cards.Where(o => o != card))
                     {
+                        // create hand and discard
                         HashSet<Card> discard = new HashSet<Card> { card, secondCard };
                         HashSet<Card> hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
-                        if (Selections.Any(o => o.Hand.All(p => hand.Contains(p)))) continue; 
+
+                        // check if selections already contains this hand
+                        if (Selections.Any(o => o.Hand.All(p => hand.Contains(p)))) continue;
                         Selections.Add(new Selection(hand, discard));
                     }
                 }

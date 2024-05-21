@@ -1,4 +1,4 @@
-﻿namespace Cribbage.FifteenCount
+﻿namespace Cribbage
 {
     public class Node : IDisposable
     {
@@ -29,7 +29,7 @@
                     child.Dispose();
                     _children.Remove(child);
                 }
-                else 
+                else
                 {
                     child.Regenerate(cards);
                 }

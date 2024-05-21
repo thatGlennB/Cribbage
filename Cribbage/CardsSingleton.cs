@@ -9,7 +9,7 @@
             get => _s.Value;
         }
 
-        public ISet<Card> Cards = new HashSet<Card>();
+        public ISet<Card> Cards { get; private set; } = new HashSet<Card>();
 
         public void Add(Card card)
         {
@@ -34,6 +34,10 @@
             {
                 Cards.Remove(card);
             }
+        }
+        public void Clear() 
+        {
+            Cards.Clear();
         }
 
     }

@@ -32,9 +32,15 @@ namespace Cribbage
         }
         public string Name { get; set; }
         public int Value { get; set; }
-        public override string ToString()
+        public static IEnumerable<string> GetNames() 
         {
-            return Name;
+            List<string> output = new();
+            for (int i = 0; i < Count(); i++) 
+            {
+                Rank? rank = getRank(i);
+                if (rank == null) continue;
+                yield return rank.Name;
+            }
         }
         public int CompareTo(object? obj)
         {
@@ -42,10 +48,6 @@ namespace Cribbage
             return Value.CompareTo(((Rank)obj).Value);
         }
         public static implicit operator int(Rank rank) => rank.Value;
-        public static implicit operator Rank(int rank) 
-        {
-            throw new NotImplementedException();
-        }
         public static Rank? getRank(int rank) 
         {
             foreach(FieldInfo field in typeof(Rank).GetFields()) 

@@ -4,26 +4,30 @@
     {
         private ISet<Node> _nodes;
         private Combinations _combinations;
-        private CardsObservable _cardsObservable;
+        private CardsSingleton _cardsObservable;
         public readonly Mode Mode;
         public ISet<Card> Cards => _cardsObservable.Cards;
         public ISet<ISet<Card>> Set => _combinations.Set;
-        public Root(ISet<Card> cards, Mode mode) 
+        public Root(Mode mode, CardsSingleton observer) 
         {
             _combinations = new Combinations();
-            _cardsObservable = new CardsObservable();
-            _cardsObservable.Add(cards);
+            _cardsObservable = observer;
             _nodes = new HashSet<Node>();
             Mode = mode;
-            foreach(Card card in cards) 
+            
+            foreach (Card card in Cards) 
             {
-                _nodes.Add(new Node(new HashSet<Card> { card }, _cardsObservable, _combinations, Mode));
+                _nodes.Add(new Node(Cards, new HashSet<Card> { card }, _combinations, Mode));
             }
         }
         public void Add(Card card)
         {
+            _nodes.Add(new Node(Cards, new HashSet<Card> { card },  _combinations, Mode));
             _cardsObservable.Add(card);
-            _nodes.Add(new Node(new HashSet<Card> { card }, _cardsObservable, _combinations, Mode));
+            foreach (Node node in _nodes) 
+            {
+                node.Regenerate(Cards);
+            }
         }
         public void Remove(Card card) 
         {

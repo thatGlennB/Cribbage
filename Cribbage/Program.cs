@@ -1,6 +1,32 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Cribbage;
+using Cribbage.FifteenCount;
+using System.Reflection;
+
 Console.WriteLine("Hello, World!");
+
+HashSet<Card> cards = new();
+
+cards.Add(new Card(Rank.ACE, Suit.HEARTS));
+cards.Add(new Card(Rank.ACE, Suit.SPADES));
+cards.Add(new Card(Rank.KING, Suit.DIAMONDS));
+cards.Add(new Card(Rank.KING, Suit.CLUBS));
+cards.Add(new Card(Rank.KING, Suit.HEARTS));
+cards.Add(new Card(Rank.KING, Suit.SPADES));
+
+Calculator calc = new Calculator(cards);
+
+foreach (Selection selection in calc.Selections) 
+{
+    Console.Write(string.Join(",",selection.Hand.Select(o => o.Rank.ToString() + o.Suit.ToString().Substring(0,1))));
+    Console.Write("\t" + string.Join(",", selection.Discard.Select(o => o.Rank.ToString() + o.Suit.ToString().Substring(0, 1))));
+    Console.Write($"\t{selection.HandValue}");
+    Console.Write($"\t{selection.DiscardValue}");
+    Console.Write($"\t{selection.ExpectedValue.ToString("#.##")}\n");
+}
+
+Console.WriteLine("");
 
 /* TODO: "selection" object containing:
  *  - register object

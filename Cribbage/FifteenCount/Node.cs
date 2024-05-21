@@ -1,39 +1,40 @@
 ﻿namespace Cribbage.FifteenCount
 {
-    public class Node : IObserver<ISet<Card>>, IDisposable
+    public class Node : IDisposable
     {
         private readonly Combinations _output;
-        private readonly CardsObservable _cardsObservable;
-        private readonly IDisposable _unsubscriber;
         internal readonly ISet<Card> _combination;
         private ISet<Node> _children { get; set; }
-        internal ISet<Card> _cards { get; set; }
+        internal ISet<Card> _cards { get; set; } = new HashSet<Card>();
         internal readonly Mode _mode;
 
         public Card Card { get => _combination.Last(); }
 
-        public Node(ISet<Card> combination, CardsObservable cardsObservable, Combinations combinations, Mode mode)
+        public Node(ISet<Card> cards, ISet<Card> combination, Combinations combinations, Mode mode)
         {
             _mode = mode;
             _combination = combination;
             _children = new HashSet<Node>();
-            _cards = new HashSet<Card>();
-            _cardsObservable = cardsObservable;
             _output = combinations;
-            _unsubscriber = _cardsObservable.Subscribe(this);
+            Regenerate(cards);
         }
 
-        private void _updateChildren()
+        public void Regenerate(ISet<Card> cards)
         {
+            _cards = cards;
             foreach (Node child in _children)
             {
-                if (!_cards.Contains(child.Card))
+                if (!cards.Contains(child.Card))
                 {
                     child.Dispose();
                     _children.Remove(child);
                 }
+                else 
+                {
+                    child.Regenerate(cards);
+                }
             }
-            foreach (Card card in _cards)
+            foreach (Card card in cards)
             {
                 if (!_children.Select(o => o.Card).Contains(card) &&
                     Card.CompareTo(card) > 0 &&
@@ -47,35 +48,27 @@
                     }
                     else if (this.ExtensionCondition(card))
                     {
-                        _children.Add(new Node(newCombination, _cardsObservable, _output, _mode));
+                        _children.Add(new Node(cards, newCombination, _output, _mode));
                     }
                 }
             }
         }
-        public void OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnNext(ISet<Card> value)
-        {
-            _cards = value;
-            _updateChildren();
-        }
 
         public void Dispose()
         {
+            foreach (Card card in _cards)
+            {
+                HashSet<Card> newCombination = _combination.Append(card).ToHashSet();
+                if (this.SuccessCondition(card))
+                {
+                    _output.Remove(newCombination);
+                }
+            }
             foreach (Node child in _children)
             {
                 child.Dispose();
                 _children.Remove(child);
             }
-            _unsubscriber.Dispose();
             _output.Remove(_combination);
         }
     }

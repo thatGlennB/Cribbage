@@ -14,8 +14,11 @@
         }
         public void Remove(ISet<Card> combination) 
         {
-            if (Set.Contains(combination))
-                Set.Remove(combination);
+            ISet<Card>? cards = Set.SingleOrDefault(o => o.All(p => combination.Any(r => r.CompareTo(p) == 0)));
+            if (cards != null) 
+            {
+                Set.Remove(cards);
+            }
         }
     }
 }

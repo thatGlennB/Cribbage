@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Cribbage
 {
@@ -29,7 +28,7 @@ namespace Cribbage
         }
         public static int Count() 
         {
-            return typeof(Rank).GetProperties().Where(o => o.PropertyType.Name == nameof(Rank)).Count();
+            return typeof(Rank).GetMembers().Count(o => o.MemberType == MemberTypes.Field);
         }
         public string Name { get; set; }
         public int Value { get; set; }
@@ -43,5 +42,23 @@ namespace Cribbage
             return Value.CompareTo(((Rank)obj).Value);
         }
         public static implicit operator int(Rank rank) => rank.Value;
+        public static implicit operator Rank(int rank) 
+        {
+            throw new NotImplementedException();
+        }
+        public static Rank? getRank(int rank) 
+        {
+            foreach(FieldInfo field in typeof(Rank).GetFields()) 
+            {
+                object? result = field.GetValue(null);
+                if (result == null) continue;
+                if (result.GetType() == typeof(Rank)) 
+                {
+                    Rank output = (Rank)result;
+                    if (output.Value == rank) return output;
+                }
+            }
+            return null;
+        }
     }
 }

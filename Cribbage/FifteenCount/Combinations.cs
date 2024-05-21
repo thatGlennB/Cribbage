@@ -6,7 +6,10 @@
         public ISet<ISet<Card>> Set { get; init; } = new HashSet<ISet<Card>>();
         public void Add(ISet<Card> combination) 
         {
-            if (!Set.Contains(combination)) 
+            // IF there is any combination in the set where...
+            // All of the members of the set are also in 'combination'
+            // THEN do not add 'combination' to the set
+            if (!Set.Any(o => o.All(p => combination.Any(r => r.CompareTo(p) == 0)))) 
                 Set.Add(combination);
         }
         public void Remove(ISet<Card> combination) 

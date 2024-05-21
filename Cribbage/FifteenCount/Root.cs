@@ -7,6 +7,7 @@
         private CardsObservable _cardsObservable;
         public readonly Mode Mode;
         public ISet<Card> Cards => _cardsObservable.Cards;
+        public ISet<ISet<Card>> Set => _combinations.Set;
         public Root(ISet<Card> cards, Mode mode) 
         {
             _combinations = new Combinations();
@@ -25,7 +26,7 @@
             _nodes.Add(new Node(new HashSet<Card> { card }, _cardsObservable, _combinations, Mode));
         }
         public void Remove(Card card) 
-        { 
+        {
             _cardsObservable.Remove(card);
             Node? node = _nodes.SingleOrDefault(o => o.Card == card);
             if (node != null) 
@@ -34,6 +35,5 @@
                 _nodes.Remove(node);
             }
         }
-        public ISet<ISet<Card>> Set => _combinations.Set;
     }
 }

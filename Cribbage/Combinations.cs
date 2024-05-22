@@ -1,23 +1,48 @@
 ﻿namespace Cribbage
 {
-    public class Combinations
+    public class Combination
     {
-        public Combinations() { }
-        public ISet<ISet<Card>> Set { get; init; } = new HashSet<ISet<Card>>();
-        public void Add(ISet<Card> combination)
+        public int Index { get; init; }
+        public Mode Mode { get; init; }
+        public ISet<Card> Cards { get; init; }
+        public Combination(int index, Mode mode, ISet<Card> cards) 
         {
-            // IF there is any combination in the set where...
-            // All of the members of the set are also in 'combination'
-            // THEN do not add 'combination' to the set
-            if (!Set.Any(o => o.All(p => combination.Any(r => r.CompareTo(p) == 0))))
-                Set.Add(combination);
+            Index = index;
+            Mode = mode;
+            Cards = cards;
         }
-        public void Remove(ISet<Card> combination)
+        public override int GetHashCode()
         {
-            ISet<Card>? cards = Set.SingleOrDefault(o => o.All(p => combination.Any(r => r.CompareTo(p) == 0)));
-            if (cards != null)
+            return base.GetHashCode();
+        }
+        public override bool Equals(object? obj)
+        {
+            if(obj != null && obj.GetType() == typeof(Combination)) 
             {
-                Set.Remove(cards);
+                Combination cb = (Combination)obj;
+                return 
+                    cb.Index == Index &&
+                    cb.Mode == Mode &&
+                    cb.Cards.All(o =>
+                        Cards.Any(p => 
+                        p.CompareTo(o) == 0));
+            }
+            return false;
+        }
+    }
+    public class ValidCombinations
+    {
+        public ValidCombinations() { }
+        public ISet<Combination>Set { get; init; } = new HashSet<Combination>();
+        public void Add(Combination combination)
+        {
+            if (!Set.Contains(combination)) Set.Add(combination);
+        }
+        public void Remove(Combination combination)
+        {
+            if (Set.Contains(combination))
+            {
+                Set.Remove(combination);
             }
         }
     }

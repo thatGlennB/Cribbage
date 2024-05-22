@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controller\" />
+    <Folder Include="Controller\DataTransferObject\" />
   </ItemGroup>
 
 </Project>

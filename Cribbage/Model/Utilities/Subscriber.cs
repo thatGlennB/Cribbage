@@ -1,4 +1,4 @@
-﻿namespace Cribbage
+﻿namespace Cribbage.Model.Utilities
 {
     public sealed class Subscriber<T> : IDisposable
     {

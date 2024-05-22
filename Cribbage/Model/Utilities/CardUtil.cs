@@ -1,35 +1,10 @@
-﻿namespace Cribbage
+﻿using Cribbage.Model.Enums;
+
+namespace Cribbage.Model.Utilities
 {
-    public class Card : IComparable<Card>
-    {
-        public Card(Rank rank, Suit suit)
-        {
-            this.Rank = rank;
-            this.Suit = suit;
-        }
-        public Rank Rank { get; set; }
-        public Suit Suit { get; set; }
-        public int Value { get => Rank > 9 ? 10 : Rank; }
-
-        public int CompareTo(Card? other)
-        {
-            if(other == null) return 1;
-            int rankComparison = this.Rank.CompareTo(other.Rank);
-            if (rankComparison == 0)
-            {
-                return this.Suit.CompareTo(other.Suit);
-            }
-            return rankComparison;
-        }
-
-        public static int operator -(Card lhs, Card rhs)
-        {
-            return lhs.Rank.Value - rhs.Rank.Value;
-        }
-    }
     public static class CardUtil
     {
-        public static int DrawCount(int excludedCards) 
+        public static int DrawCount(int excludedCards)
         {
             return SuitUtil.Count * Rank.Count() - excludedCards;
         }
@@ -37,15 +12,15 @@
         {
             return Math.Abs(card.Rank - target.Rank) <= 1;
         }
-        public static int CountInRank(this Card[] cards, int rank) 
+        public static int CountInRank(this Card[] cards, int rank)
         {
             return cards.Count(o => o.Rank == rank);
         }
-        public static int CountInSuit(this Card[] cards, Suit suit) 
+        public static int CountInSuit(this Card[] cards, Suit suit)
         {
             return cards.Count(o => o.Suit == suit);
         }
-        public static Card[] Sort(this Card[] cards) 
+        public static Card[] Sort(this Card[] cards)
         {
             Card[] output = new Card[cards.Length];
             for (int i = 0; i < cards.Length; i++)

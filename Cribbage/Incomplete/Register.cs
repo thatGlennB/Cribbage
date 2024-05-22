@@ -1,8 +1,17 @@
-﻿namespace Cribbage
+﻿using Cribbage.Model;
+using Cribbage.Model.Enums;
+
+namespace Cribbage.Incomplete
 {
     // TODO: replace list with more appropriate string holder
     // stringbuilder? streamwriter? not sure...
     // TODO: create text formats
+
+
+    // TODO: make this a singleton
+    // TODO: observe model elements to create view
+
+
     public class Register
     {
         public readonly List<string> Messages = new();
@@ -36,7 +45,7 @@
             }
         }
     }
-    internal static class Format
+    public static class Format
     {
         public static string Shorthand(this IEnumerable<Card> cards)
         {

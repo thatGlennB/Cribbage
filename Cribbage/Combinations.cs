@@ -32,7 +32,11 @@
     }
     public class ValidCombinations
     {
-        public ValidCombinations() { }
+        #region Singleton Implementation
+        private ValidCombinations() { }
+        public static readonly Lazy<ValidCombinations> _s = new Lazy<ValidCombinations>(() => new ValidCombinations());
+        public static ValidCombinations Instance { get => _s.Value; }
+        #endregion
         public ISet<Combination>Set { get; init; } = new HashSet<Combination>();
         public void Add(Combination combination)
         {

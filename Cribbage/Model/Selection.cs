@@ -2,10 +2,10 @@
 
 namespace Cribbage.Model
 {
-    public class Selection
+    internal class Selection
     {
 
-        public Selection(ISet<Card> hand, ISet<Card> discard)
+        internal Selection(ISet<Card> hand, ISet<Card> discard)
         {
             // pass arguments to instance properties
             Hand = hand;
@@ -16,10 +16,10 @@ namespace Cribbage.Model
             Root = new RootNode(Combinations);
         }
 
-        public readonly RootNode Root;
-        public readonly Combinations Combinations;
-        public readonly ISet<Card> Hand;
-        public readonly ISet<Card> Discard;
+        internal readonly RootNode Root;
+        internal readonly Combinations Combinations;
+        internal readonly ISet<Card> Hand;
+        internal readonly ISet<Card> Discard;
 
     }
 }

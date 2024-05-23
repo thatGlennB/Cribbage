@@ -2,6 +2,7 @@
 
 using Cribbage.Controller;
 using Cribbage.Controller.DataTransferObject;
+using Cribbage.Incomplete;
 using Cribbage.Model;
 using Cribbage.Model.Enums;
 
@@ -37,6 +38,10 @@ cards.Add(new Card(Rank.EIGHT, Suit.HEARTS));
 
 IDealValueController dvc = new DealValueController();
 IEnumerable<ResultDTO> result = dvc.Get(cards.ToHashSet());
+foreach (ResultDTO resultDTO in result) 
+{
+    Console.WriteLine($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}\t{resultDTO.HandValue}\t{resultDTO.DiscardValue}\t{resultDTO.ExpectedDrawValue}");
+}
 
 Console.WriteLine("end");
 

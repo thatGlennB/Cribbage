@@ -60,7 +60,7 @@ namespace Cribbage.Controllers
                     drawCard = CardUtil.GetCard(drawCardRank, (Suit)i);
                     if (!Selection.Hand.Contains(drawCard) && !Selection.Discard.Contains(drawCard)) { break; }
                 }
-                if (Selection.Hand.Contains(drawCard) || Selection.Discard.Contains(drawCard))
+                if (drawCard != null && !Selection.Hand.Contains(drawCard) && !Selection.Discard.Contains(drawCard))
                 {
                     Selection.Combinations.Add(drawCard);
                 }

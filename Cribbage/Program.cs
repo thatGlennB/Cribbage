@@ -1,17 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Cribbage.Controller;
+using Cribbage.Controller.DataTransferObject;
 using Cribbage.Model;
 using Cribbage.Model.Enums;
 
 Console.WriteLine("Hello, World!");
 
-
-
-/* TODO: replace 3 roots in Selection with a single root
- *   * do not test combination validity when constructing tree; build any node where child card is less than parent, regardless of validity
- *   * implement "chain of responsibility" pattern, to pass point-scoring criteria into tree
- *   
- */
 
 /* TODO: "Menu" class, that mediates between user and program
  *  - presents options to user and registers user input:
@@ -28,4 +23,20 @@ Console.WriteLine("Hello, World!");
 
 // TODO: unit tests
 // TODO: create more appealing view (blazor? api?)
+
+List<Card> cards = new();
+cards.Add(new Card(Rank.FIVE, Suit.HEARTS));
+cards.Add(new Card(Rank.FIVE, Suit.CLUBS));
+cards.Add(new Card(Rank.FIVE, Suit.SPADES));
+cards.Add(new Card(Rank.JACK, Suit.DIAMONDS));
+cards.Add(new Card(Rank.ACE, Suit.HEARTS));
+cards.Add(new Card(Rank.EIGHT, Suit.HEARTS));
+
+
+
+
+IDealValueController dvc = new DealValueController();
+IEnumerable<ResultDTO> result = dvc.Get(cards.ToHashSet());
+
+Console.WriteLine("end");
 

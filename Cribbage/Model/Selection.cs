@@ -4,7 +4,6 @@ namespace Cribbage.Model
 {
     public class Selection
     {
-        public ISet<Node> Nodes;
 
         public Selection(ISet<Card> hand, ISet<Card> discard)
         {

@@ -5,6 +5,6 @@ namespace Cribbage.Controller
 {
     public interface IDealValueController
     {
-        ISet<ResultDTO> Get(ISet<Card> deal);
+        IEnumerable<ResultDTO> Get(ISet<Card> deal);
     }
 }

@@ -43,5 +43,13 @@ namespace Cribbage.Model.Utilities
             }
             return output;
         }
+        public static Card GetCard(int value, Suit suit)
+        {
+            // get rank corresponding to value, if one exists
+            Rank? rank = Rank.getRank(value);
+            if (rank == null) throw new ArgumentOutOfRangeException();
+            return new Card(rank, (suit));
+
+        }
     }
 }

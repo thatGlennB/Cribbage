@@ -43,7 +43,7 @@ namespace Cribbage.Model.CombinationTree
         }
         virtual protected void _newNode(Card card)
         {
-            Node newNode = new Node(new HashSet<Card> { card });
+            Node newNode = new Node(new HashSet<Card> { card }, _combinations);
             _combinations.Nodes.Add(newNode);
             ChildNodes.Add(newNode);
         }

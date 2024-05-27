@@ -2,7 +2,7 @@
 
 namespace Cribbage.Model.Utilities
 { 
-    internal static class SuitUtil
+    internal static class Suits
     {
         internal static int Count => Enum.GetNames(typeof(Suit)).Length;
         internal static IEnumerable<char> ToCharArray()

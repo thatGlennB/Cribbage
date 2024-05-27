@@ -1,24 +1,41 @@
-﻿namespace Cribbage.Model.CombinationTree
+﻿using Cribbage.Model.Utilities;
+
+namespace Cribbage.Model.CombinationTree
 {
-    public class Node : AbstractNode
+    internal class Node : AbstractNode
     {
-        public readonly ISet<Card> Combination;
+        internal readonly ISet<Card> Combination;
+        internal readonly RootNode Root;
 
-        public Card Card { get => Combination.Last(); }
+        internal Card Card { get => Combination.Last(); }
 
-        public Node(ISet<Card> combination, Combinations combinations) : base(combinations)
+        internal Node(ISet<Card> combination, RootNode root) : base()
         {
+            Root = root;
             Combination = combination;
             Regenerate();
         }
 
-        protected override void _createAddedCardNodes()
+        protected override void CreateAddedCardNodes()
         {
-            IEnumerable<Card> cardsToAdd = Cards.Where(o =>
-                !ChildNodes.Select(p => p.Card).Contains(o) && Card.CompareTo(o) > 0);
-            foreach (Card card in cardsToAdd)
+            foreach (Card card in Root.Cards)
             {
-                _newNode(card);
+                if (Card.Compare(card) > 0) 
+                {
+                    AddNode(Combination.Append(card).ToHashSet(), Root);
+                }
+            }
+        }
+
+        protected override void DestroyRemovedCardNodes()
+        {
+            foreach (Node node in ChildNodes)
+            {
+                if (!Root.Cards.Contains(node.Card))
+                {
+                    ChildNodes.Remove(node);
+                    Root.AllNodes.Remove(node);
+                }
             }
         }
     }

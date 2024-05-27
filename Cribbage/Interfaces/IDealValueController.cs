@@ -1,7 +1,7 @@
 ﻿using Cribbage.Controller.DataTransferObject;
 using Cribbage.Model;
 
-namespace Cribbage.Controller
+namespace Cribbage.Interfaces
 {
     public interface IDealValueController
     {

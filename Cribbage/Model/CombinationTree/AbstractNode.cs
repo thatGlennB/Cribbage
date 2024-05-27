@@ -1,51 +1,33 @@
-﻿using Cribbage.Model.Utilities;
-
-namespace Cribbage.Model.CombinationTree
+﻿namespace Cribbage.Model.CombinationTree
 {
-    public abstract class AbstractNode
+    internal abstract class AbstractNode
     {
-        // todo: Cards should be a singleton observable
-        protected readonly Combinations _combinations;
-        public ISet<Node> ChildNodes { get; protected set; }
-        public virtual ISet<Card> Cards { get; set; }
-        protected AbstractNode(Combinations combinations)
+        internal ISet<Node> ChildNodes { get; set; }
+        protected AbstractNode()
         {
-            _combinations = combinations;
             ChildNodes = new HashSet<Node>();
-            Cards = new HashSet<Card>();
         }
-        public virtual void Regenerate()
+        internal virtual void Regenerate()
         {
-            _createAddedCardNodes();
-            _destroyRemovedCardNodes();
+            CreateAddedCardNodes();
+            DestroyRemovedCardNodes();
             foreach (Node node in ChildNodes)
             {
                 node.Regenerate();
             }
         }
-        virtual protected void _createAddedCardNodes()
+        abstract protected void CreateAddedCardNodes();
+        abstract protected void DestroyRemovedCardNodes();
+        virtual protected void AddNode(ISet<Card> cards, RootNode root)
         {
-            IEnumerable<Card> cardsToAdd = Cards.Where(card =>
-                !ChildNodes.Select(node => node.Card).Contains(card));
-            foreach (Card card in cardsToAdd)
-            {
-                _newNode(card);
-            }
-        }
-        virtual protected void _destroyRemovedCardNodes()
-        {
-            IEnumerable<Node> nodesToRemove = ChildNodes.Where(o => !Cards.Contains(o.Card));
-            foreach (Node node in nodesToRemove)
-            {
-                _combinations.Nodes.Remove(node);
-                ChildNodes.Remove(node);
-            }
-        }
-        virtual protected void _newNode(Card card)
-        {
-            Node newNode = new Node(new HashSet<Card> { card }, _combinations);
-            _combinations.Nodes.Add(newNode);
+            Node newNode = new(cards, root);
+            root.AllNodes.Add(newNode);
             ChildNodes.Add(newNode);
         }
-    }
+        virtual protected void RemoveNode(Node node, RootNode root)
+        {
+            ChildNodes.Remove(node);
+            root.AllNodes.Remove(node);
+        }
+}
 }

@@ -2,11 +2,17 @@
 
 using Cribbage.Controller;
 using Cribbage.Controller.DataTransferObject;
-using Cribbage.Incomplete;
+using Cribbage.Interfaces;
 using Cribbage.Model;
 using Cribbage.Model.Enums;
+using Cribbage.Model.Utilities;
 
 Console.WriteLine("Hello, World!");
+
+
+
+/* TODO
+ */
 
 
 /* TODO: "Menu" class, that mediates between user and program
@@ -25,22 +31,30 @@ Console.WriteLine("Hello, World!");
 // TODO: unit tests
 // TODO: create more appealing view (blazor? api?)
 
-List<Card> cards = new();
-cards.Add(new Card(Rank.FIVE, Suit.HEARTS));
-cards.Add(new Card(Rank.FIVE, Suit.CLUBS));
-cards.Add(new Card(Rank.FIVE, Suit.SPADES));
-cards.Add(new Card(Rank.JACK, Suit.DIAMONDS));
-cards.Add(new Card(Rank.ACE, Suit.HEARTS));
-cards.Add(new Card(Rank.EIGHT, Suit.HEARTS));
+List<Card> cards =
+[
+    new Card(Rank.FIVE, Suit.HEARTS),
+    new Card(Rank.FIVE, Suit.CLUBS),
+    new Card(Rank.FIVE, Suit.SPADES),
+    new Card(Rank.JACK, Suit.DIAMONDS),
+    new Card(Rank.ACE, Suit.HEARTS),
+    new Card(Rank.EIGHT, Suit.HEARTS),
+];
 
 
 
 
-IDealValueController dvc = new DealValueController();
-IEnumerable<ResultDTO> result = dvc.Get(cards.ToHashSet());
-foreach (ResultDTO resultDTO in result) 
+//IEnumerable<ResultDTO> result = new DealValueController().Get(cards.ToHashSet());
+//foreach (ResultDTO resultDTO in result) 
+//{
+//    Console.WriteLine($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}\t{resultDTO.HandValue}\t{resultDTO.DiscardValue}\t{resultDTO.ExpectedDrawValue}");
+//}
+
+IEnumerable<int[]> combis = combinations(6, 2);
+
+foreach (int[] comb in combis) 
 {
-    Console.WriteLine($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}\t{resultDTO.HandValue}\t{resultDTO.DiscardValue}\t{resultDTO.ExpectedDrawValue}");
+    Console.WriteLine(string.Join(",", comb));
 }
 
 Console.WriteLine("end");

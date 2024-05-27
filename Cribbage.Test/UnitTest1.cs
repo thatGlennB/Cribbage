@@ -1,4 +1,5 @@
-using Cribbage.Model;
+using Cribbage.Model.CombinationTree;
+using M = Cribbage.Model;
 
 namespace Cribbage.Test
 {
@@ -7,7 +8,7 @@ namespace Cribbage.Test
         [Fact]
         public void Test1()
         {
-            Selection selection = new Selection(Enumerable.Empty<Card>().ToHashSet(), Enumerable.Empty<Card>().ToHashSet());
+            RootNode selection = new(Enumerable.Empty<M.Card>().ToHashSet(), Enumerable.Empty<M.Card>().ToHashSet());
         }
     }
 }

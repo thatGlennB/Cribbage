@@ -8,48 +8,49 @@ namespace Cribbage.Controllers
 {
     internal class PointCalculator
     {
-        public readonly Selection Selection;
-        public IEnumerable<int> DrawValues { get; private set; }
-        public int Hand { get; private set; }
-        public int Discard { get; private set; }
-        public int HatValue { get; private set; }
-        public PointCalculator(Selection selection)
+        internal readonly Model.CombinationTree.RootNode RootNode;
+        internal IEnumerable<int> DrawValues { get; private set; }
+        internal int Hand { get; private set; }
+        internal int Discard { get; private set; }
+        internal int HatValue { get; private set; }
+        internal DrawCard DrawCard = DrawCard.Instance;
+        internal PointCalculator(Model.CombinationTree.RootNode root)
         {
-            Selection = selection;
+            RootNode = root;
             
-            Hand = _getPointInSet();
-            DrawValues = _getDrawValues();
+            Hand = GetPointInSet();
+            DrawValues = GetDrawValues();
 
             HatValue = 0;
-            IEnumerable<Card> jacks = Selection.Hand.Where(o => o.Rank == Rank.JACK);
-            if (jacks.Count() > 0) 
+            IEnumerable<Card> jacks = RootNode.Cards.Where(o => o.Rank == Rank.JACK);
+            if (jacks.Any())
             {
                 foreach(Suit suit in jacks.Select(o => o.Suit)) 
                 {
-                    Card[] possibleDrawsInSuit = Selection.Hand.Union(Selection.Discard).ToArray();
+                    Card[] possibleDrawsInSuit = RootNode.Hand.Union(RootNode.Discard).ToArray();
                     HatValue += CardUtil.CountInSuit(possibleDrawsInSuit, suit);
                 }
             }
 
-            if(Selection.Discard.Select(o => o.Value).Sum() == 15) 
+            if(RootNode.Discard.Select(o => o.Value()).Sum() == 15) 
             {
                 Discard += 2;
             }
-            if (Selection.Discard.Count() == 2 && Selection.Discard.First().Rank == Selection.Discard.Last().Rank) 
+            if (RootNode.Discard.Count == 2 && RootNode.Discard.First().Rank == RootNode.Discard.Last().Rank) 
             {
                 Discard += 2;
             }
         }
-        private IEnumerable<int> _getDrawValues () 
+        private List<int> GetDrawValues()
         {
-            List<int> output = new();
+            List<int> output = [];
             for (int i = 1; i <= Rank.Count(); i++) 
             {
-                output.Add(_getPointInSet(i) - Hand);
+                output.Add(GetPointInSet(i) - Hand);
             }
             return output;
         }
-        private int _getPointInSet(int drawCardRank = 0) 
+        private int GetPointInSet(int drawCardRank = 0) 
         {
             Card? drawCard = null;
             int output = 0;
@@ -58,46 +59,46 @@ namespace Cribbage.Controllers
                 for(int i = 0; i < SuitUtil.Count; i++) 
                 {
                     drawCard = CardUtil.GetCard(drawCardRank, (Suit)i);
-                    if (!Selection.Hand.Contains(drawCard) && !Selection.Discard.Contains(drawCard)) { break; }
+                    if (!RootNode.Hand.Contains(drawCard) && !RootNode.Discard.Contains(drawCard)) { break; }
                 }
-                if (drawCard != null && !Selection.Hand.Contains(drawCard) && !Selection.Discard.Contains(drawCard))
+                if (drawCard != null && !RootNode.Hand.Contains(drawCard) && !RootNode.Discard.Contains(drawCard))
                 {
-                    Selection.Combinations.Add(drawCard);
+                    DrawCard.Add(drawCard);
                 }
             }
 
-            foreach (Node node in Selection.Combinations.Nodes) 
+            foreach (Node node in RootNode.AllNodes) 
             {
-                output += _getPointCombinations(node);
+                output += GetPointCombinations(node);
             }
 
             if (drawCard != null) 
             {
-                Selection.Combinations.Remove(drawCard);
+                DrawCard.Clear();
             }
             return output;
         }
-        private int _getPointCombinations(Node node)
+        private static int GetPointCombinations(Node node)
         {
             int output = 0;
             ISet<Card> combo = node.Combination;
-            ISet<Card> cards = node.Cards;
-            if (combo.Select(o => o.Value).Sum() == 15)
+            ISet<Card> cards = node.Root.Cards;
+            if (combo.Select(o => o.Value()).Sum() == 15)
             {
                 output += 2;
             }
-            if (combo.Count() == 2 && combo.First().Rank == combo.Last().Rank)
+            if (combo.Count == 2 && combo.First().Rank == combo.Last().Rank)
             {
                 output += 2;
             }
-            if (cards.Count() == combo.Count() &&
+            if (cards.Count == combo.Count &&
                     cards.All(o => o.Suit == cards.First().Suit))
             {
-                output += cards.Count();
+                output += cards.Count;
             }
             bool isRun = true;
             // check that combination contains only sequential ranks
-            for (int i = 1; i < combo.Count(); i++)
+            for (int i = 1; i < combo.Count; i++)
             {
                 if (combo.ElementAt(i - 1).Rank - combo.ElementAt(i).Rank != 1)
                 {
@@ -107,7 +108,7 @@ namespace Cribbage.Controllers
             }
             if (isRun && cards.Any(o => o.Rank == combo.Last().Rank - 1))
             {
-                output += combo.Count();
+                output += combo.Count;
             }
             return output;
         }

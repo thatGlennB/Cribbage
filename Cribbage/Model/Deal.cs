@@ -1,35 +1,57 @@
-﻿namespace Cribbage.Model
+﻿using Cribbage.Model.CombinationTree;
+
+namespace Cribbage.Model
 {
-    public class Deal
+    internal class Deal
     {
-        public ISet<Selection> Selections { get; private set; } = new HashSet<Selection>();
-        public Deal(ISet<Card> cards)
+        internal ISet<RootNode> Roots { get; private set; } = new HashSet<RootNode>();
+        internal Deal(ISet<Card> cards)
         {
-            if (cards.Count == 5)
+            HashSet<Card> discard = [];
+            HashSet<Card> hand = [];
+            if (cards.Count == 5 || cards.Count == 6)
             {
-                foreach (Card card in cards)
+                foreach (int[] combo in combinations(cards.Count, cards.Count - 4))
                 {
-                    HashSet<Card> discard = new HashSet<Card> { card };
-                    HashSet<Card> hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
-                    Selections.Add(new Selection(hand, discard));
+                    discard.Clear();
+                    foreach (int index in combo)
+                    {
+                        discard.Add(cards.ElementAt(index));
+                    }
+                    hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
+                    Roots.Add(new RootNode(hand, discard));
                 }
             }
-            else if (cards.Count == 6)
+            else throw new ArgumentOutOfRangeException(nameof(cards), $"A deal object cannot be made for a set of {cards.Count} cards");
+        }
+        internal static IEnumerable<int[]> combinations(int n, int r)
+        {
+            int[] output = new int[r];
+            for (int i = 0; i < output.Length; i++)
             {
-                foreach (Card card in cards)
+                output[i] = i;
+            }
+            do
+            {
+                yield return output;
+                for (int i = 1; i <= output.Length; i++)
                 {
-                    foreach (Card secondCard in cards.Where(o => o != card))
+                    int index = output.Length - i;
+                    int nextValue = output[index] + 1;
+                    if (nextValue < n)
                     {
-                        // create hand and discard
-                        HashSet<Card> discard = new HashSet<Card> { card, secondCard };
-                        HashSet<Card> hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
-
-                        // check if selections already contains this hand
-                        if (Selections.Any(o => o.Hand.All(p => hand.Contains(p)))) continue;
-                        Selections.Add(new Selection(hand, discard));
+                        output[index] = nextValue;
+                        if (i > 1)
+                        {
+                            for (int j = 1; j < output.Length - index; j++)
+                            {
+                                output[index + j] = output[index] + j;
+                            }
+                        }
+                        break;
                     }
                 }
-            }
+            } while (output[0] <= n - r);
         }
     }
 }

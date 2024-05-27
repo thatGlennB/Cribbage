@@ -8,6 +8,7 @@ namespace Cribbage.Model.Enums
 
     public class Rank : IComparable
     {
+        // Not thread-safe. Revisit...
         public static Rank ACE = new("A", 1);
         public static Rank TWO = new("2", 2);
         public static Rank THREE = new("3", 3);
@@ -34,10 +35,9 @@ namespace Cribbage.Model.Enums
         public int Value { get; set; }
         public static IEnumerable<string> GetNames()
         {
-            List<string> output = new();
             for (int i = 0; i < Count(); i++)
             {
-                Rank? rank = getRank(i);
+                Rank? rank = GetRank(i);
                 if (rank == null) continue;
                 yield return rank.Name;
             }
@@ -48,7 +48,7 @@ namespace Cribbage.Model.Enums
             return Value.CompareTo(((Rank)obj).Value);
         }
         public static implicit operator int(Rank rank) => rank.Value;
-        public static Rank? getRank(int rank)
+        public static Rank? GetRank(int rank)
         {
             foreach (FieldInfo field in typeof(Rank).GetFields())
             {

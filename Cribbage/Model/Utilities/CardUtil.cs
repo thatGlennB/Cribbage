@@ -2,25 +2,25 @@
 
 namespace Cribbage.Model.Utilities
 {
-    public static class CardUtil
+    internal static class CardUtil
     {
-        public static int DrawCount(int excludedCards)
+        internal static int DrawCount(int excludedCards)
         {
             return SuitUtil.Count * Rank.Count() - excludedCards;
         }
-        public static bool IsSequential(this Card card, Card target)
+        internal static bool IsSequential(this Card card, Card target)
         {
             return Math.Abs(card.Rank - target.Rank) <= 1;
         }
-        public static int CountInRank(this Card[] cards, int rank)
+        internal static int CountInRank(this Card[] cards, int rank)
         {
             return cards.Count(o => o.Rank == rank);
         }
-        public static int CountInSuit(this Card[] cards, Suit suit)
+        internal static int CountInSuit(this Card[] cards, Suit suit)
         {
             return cards.Count(o => o.Suit == suit);
         }
-        public static Card[] Sort(this Card[] cards)
+        internal static Card[] Sort(this Card[] cards)
         {
             Card[] output = new Card[cards.Length];
             for (int i = 0; i < cards.Length; i++)
@@ -35,21 +35,33 @@ namespace Cribbage.Model.Utilities
                     // if shunt card is less than current occupant of output[j], then swap cards
                     else if (shunt.Rank.CompareTo(output[j].Rank) < 0)
                     {
-                        Card hold = shunt;
-                        shunt = output[j];
-                        output[j] = hold;
+                        (output[j], shunt) = (shunt, output[j]);
                     }
                 }
             }
             return output;
         }
-        public static Card GetCard(int value, Suit suit)
+        internal static Card GetCard(int value, Suit suit)
         {
             // get rank corresponding to value, if one exists
-            Rank? rank = Rank.getRank(value);
-            if (rank == null) throw new ArgumentOutOfRangeException();
-            return new Card(rank, (suit));
+            Rank? rank = Rank.GetRank(value);
+            return rank != null ? new Card(rank, suit) : throw new ArgumentOutOfRangeException(nameof(value),$"variable {nameof(value)} must correspond to a valid card rank value");
+        }
+        public static int Value(this Card card) => card.Rank > 9 ? 10 : card.Rank;
 
+        internal static int Compare(this Card card, Card? other)
+        {
+            if (other == null) return 1;
+            int rankComparison = card.Rank.CompareTo(other.Rank);
+            if (rankComparison == 0)
+            {
+                return card.Suit.CompareTo(other.Suit);
+            }
+            return rankComparison;
+        }
+        internal static string Shorthand(this Card card) 
+        {
+            return string.Concat(card.Rank.Name, card.Suit.ToString().AsSpan(0, 1));
         }
     }
 }

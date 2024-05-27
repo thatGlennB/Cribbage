@@ -1,14 +1,10 @@
 ﻿namespace Cribbage.Model.Utilities
 {
-    public sealed class Subscriber<T> : IDisposable
+    internal sealed class Subscriber<T>(ISet<IObserver<T>> observers, IObserver<T> observer) : IDisposable
     {
-        private readonly ISet<IObserver<T>> _observers;
-        private readonly IObserver<T> _observer;
-        public Subscriber(ISet<IObserver<T>> observers, IObserver<T> observer)
-        {
-            _observer = observer;
-            _observers = observers;
-        }
+        private readonly ISet<IObserver<T>> _observers = observers;
+        private readonly IObserver<T> _observer = observer;
+
         public void Dispose()
         {
             _observers.Remove(_observer);

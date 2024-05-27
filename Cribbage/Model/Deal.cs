@@ -11,7 +11,8 @@ namespace Cribbage.Model
             HashSet<Card> hand = [];
             if (cards.Count == 5 || cards.Count == 6)
             {
-                foreach (int[] combo in combinations(cards.Count, cards.Count - 4))
+                IEnumerable<int[]> combos = combinations(cards.Count, cards.Count - 4);
+                foreach (int[] combo in combos)
                 {
                     discard.Clear();
                     foreach (int index in combo)

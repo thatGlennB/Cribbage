@@ -44,17 +44,15 @@ List<Card> cards =
 
 
 
-//IEnumerable<ResultDTO> result = new DealValueController().Get(cards.ToHashSet());
-//foreach (ResultDTO resultDTO in result) 
-//{
-//    Console.WriteLine($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}\t{resultDTO.HandValue}\t{resultDTO.DiscardValue}\t{resultDTO.ExpectedDrawValue}");
-//}
-
-IEnumerable<int[]> combis = combinations(6, 2);
-
-foreach (int[] comb in combis) 
+IEnumerable<ResultDTO> result = new DealValueController().Get(cards.ToHashSet());
+foreach (ResultDTO resultDTO in result)
 {
-    Console.WriteLine(string.Join(",", comb));
+    Console.Write($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}");
+    Console.Write($"\t{string.Join(",", resultDTO.Discard.Select(o => o.Shorthand()))}");
+    Console.Write($"\t{resultDTO.HandValue}");
+    Console.Write($"\t{resultDTO.DiscardValue}");
+    Console.Write($"\t{resultDTO.ExpectedDrawValue}");
+    Console.Write($"\n");
 }
 
 Console.WriteLine("end");

@@ -8,13 +8,13 @@ namespace Cribbage.Controllers
 {
     internal class PointCalculator
     {
-        internal readonly Model.CombinationTree.RootNode RootNode;
+        internal readonly RootNode RootNode;
         internal IEnumerable<int> DrawValues { get; private set; }
         internal int Hand { get; private set; }
         internal int Discard { get; private set; }
         internal int HatValue { get; private set; }
         internal DrawCard DrawCard = DrawCard.Instance;
-        internal PointCalculator(Model.CombinationTree.RootNode root)
+        internal PointCalculator(RootNode root)
         {
             RootNode = root;
             

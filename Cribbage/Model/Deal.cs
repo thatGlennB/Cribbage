@@ -1,4 +1,5 @@
 ﻿using Cribbage.Model.CombinationTree;
+using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model
 {
@@ -11,7 +12,9 @@ namespace Cribbage.Model
             HashSet<Card> hand = [];
             if (cards.Count == 5 || cards.Count == 6)
             {
-                IEnumerable<int[]> combos = combinations(cards.Count, cards.Count - 4);
+                //HashSet<Card> cardCopy = new();
+                //cardCopy = cards.CreateCopy();
+                IEnumerable<int[]> combos = Util.Combinations(cards.Count, cards.Count - 4);
                 foreach (int[] combo in combos)
                 {
                     discard.Clear();
@@ -20,39 +23,10 @@ namespace Cribbage.Model
                         discard.Add(cards.ElementAt(index));
                     }
                     hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
-                    Roots.Add(new RootNode(hand, discard));
+                    Roots.Add(new RootNode(new Cards(hand, discard)));
                 }
             }
             else throw new ArgumentOutOfRangeException(nameof(cards), $"A deal object cannot be made for a set of {cards.Count} cards");
-        }
-        internal static IEnumerable<int[]> combinations(int n, int r)
-        {
-            int[] output = new int[r];
-            for (int i = 0; i < output.Length; i++)
-            {
-                output[i] = i;
-            }
-            do
-            {
-                yield return output;
-                for (int i = 1; i <= output.Length; i++)
-                {
-                    int index = output.Length - i;
-                    int nextValue = output[index] + 1;
-                    if (nextValue < n)
-                    {
-                        output[index] = nextValue;
-                        if (i > 1)
-                        {
-                            for (int j = 1; j < output.Length - index; j++)
-                            {
-                                output[index + j] = output[index] + j;
-                            }
-                        }
-                        break;
-                    }
-                }
-            } while (output[0] <= n - r);
         }
     }
 }

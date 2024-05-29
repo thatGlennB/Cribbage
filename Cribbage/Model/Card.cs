@@ -2,5 +2,11 @@
 
 namespace Cribbage.Model
 {
-    public record class Card(Rank Rank, Suit Suit);
+    public record Card(Rank Rank, Suit Suit)
+    {
+        public override string ToString()
+        {
+            return $"{Rank.Name} {Suit}";
+        }
+    } 
 }

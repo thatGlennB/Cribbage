@@ -7,34 +7,23 @@ namespace Cribbage.Model.CombinationTree
         internal readonly ISet<Card> Combination;
         internal readonly RootNode Root;
 
-        internal Card Card { get => Combination.Last(); }
+        internal readonly Card Card;
 
         internal Node(ISet<Card> combination, RootNode root) : base()
         {
             Root = root;
-            Combination = combination;
+            Combination = Util.Copy(combination);
+            Card = combination.Last();
             Regenerate();
         }
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (Card card in Root.Cards)
+            foreach (Card card in Root.Cards.HandAndDraw)
             {
                 if (Card.Compare(card) > 0) 
                 {
-                    AddNode(Combination.Append(card).ToHashSet(), Root);
-                }
-            }
-        }
-
-        protected override void DestroyRemovedCardNodes()
-        {
-            foreach (Node node in ChildNodes)
-            {
-                if (!Root.Cards.Contains(node.Card))
-                {
-                    ChildNodes.Remove(node);
-                    Root.AllNodes.Remove(node);
+                    AddNode(card, Root, Combination);
                 }
             }
         }

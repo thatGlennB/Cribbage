@@ -3,7 +3,7 @@
 namespace Cribbage.Model.Enums
 {
 
-    // TODO: replace with enumerable - or have implicit conversion to integer
+    // TODO: can Lazy do this?
 
 
     public class Rank : IComparable
@@ -33,15 +33,6 @@ namespace Cribbage.Model.Enums
         }
         public string Name { get; set; }
         public int Value { get; set; }
-        public static IEnumerable<string> GetNames()
-        {
-            for (int i = 0; i < Count(); i++)
-            {
-                Rank? rank = GetRank(i);
-                if (rank == null) continue;
-                yield return rank.Name;
-            }
-        }
         public int CompareTo(object? obj)
         {
             if (obj == null) return 1;

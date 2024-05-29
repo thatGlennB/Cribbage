@@ -6,83 +6,65 @@ using Cribbage.Model.Utilities;
 
 namespace Cribbage.Controllers
 {
-    internal class PointCalculator
+    internal static class PointCombinations
     {
-        internal readonly RootNode RootNode;
-        internal IEnumerable<int> DrawValues { get; private set; }
-        internal int Hand { get; private set; }
-        internal int Discard { get; private set; }
-        internal int HatValue { get; private set; }
-        internal DrawCard DrawCard = DrawCard.Instance;
-        internal PointCalculator(RootNode root)
+        internal static int GetHandPoints(this RootNode root) 
         {
-            RootNode = root;
-            
-            Hand = GetPointInSet();
-            DrawValues = GetDrawValues();
-
-            HatValue = 0;
-            IEnumerable<Card> jacks = RootNode.Cards.Where(o => o.Rank == Rank.JACK);
-            if (jacks.Any())
-            {
-                foreach(Suit suit in jacks.Select(o => o.Suit)) 
-                {
-                    Card[] possibleDrawsInSuit = RootNode.Hand.Union(RootNode.Discard).ToArray();
-                    HatValue += CardUtil.CountInSuit(possibleDrawsInSuit, suit);
-                }
-            }
-
-            if(RootNode.Discard.Select(o => o.Value()).Sum() == 15) 
-            {
-                Discard += 2;
-            }
-            if (RootNode.Discard.Count == 2 && RootNode.Discard.First().Rank == RootNode.Discard.Last().Rank) 
-            {
-                Discard += 2;
-            }
-        }
-        private List<int> GetDrawValues()
-        {
-            List<int> output = [];
-            for (int i = 1; i <= Rank.Count(); i++) 
-            {
-                output.Add(GetPointInSet(i) - Hand);
-            }
-            return output;
-        }
-        private int GetPointInSet(int drawCardRank = 0) 
-        {
-            Card? drawCard = null;
             int output = 0;
-            if (drawCardRank != 0) 
+            foreach (Node node in root.AllNodes) 
             {
-                for(int i = 0; i < SuitUtil.Count; i++) 
-                {
-                    drawCard = CardUtil.GetCard(drawCardRank, (Suit)i);
-                    if (!RootNode.Hand.Contains(drawCard) && !RootNode.Discard.Contains(drawCard)) { break; }
-                }
-                if (drawCard != null && !RootNode.Hand.Contains(drawCard) && !RootNode.Discard.Contains(drawCard))
-                {
-                    DrawCard.Add(drawCard);
-                }
-            }
-
-            foreach (Node node in RootNode.AllNodes) 
-            {
-                output += GetPointCombinations(node);
-            }
-
-            if (drawCard != null) 
-            {
-                DrawCard.Clear();
+                output += node.Combination.IsFifteens() ? 2 : 0;
+                output += node.Combination.IsPair() ? 2 : 0;
+                output += node.IsRun() ? node.Combination.Count : 0;
+                output += node.IsFlush() ? node.Root.Cards.HandAndDraw.Count : 0;
             }
             return output;
         }
-        private static int GetPointCombinations(Node node)
+        internal static int GetDiscardPoints(this ISet<Card> discard) 
+        {
+            return (IsFifteens(discard) ? 2 : 0) + (IsPair(discard) ? 2 : 0);
+        }
+        internal static bool IsFifteens(this ISet<Card> cards) => cards.Select(o => o.Value()).Sum() == 15;
+
+        internal static bool IsPair(this ISet<Card> cards) => cards.Count == 2 && cards.First().Rank == cards.Last().Rank;
+
+        internal static bool IsRun(this Node node) 
+        {
+            if (node.Combination.Count < 3) 
+            {
+                return false;
+            }
+            for (int i = 1; i < node.Combination.Count; i++)
+            {
+                if (node.Combination.ElementAt(i - 1).Rank - node.Combination.ElementAt(i).Rank != 1)
+                {
+                    return false;
+                }
+            }
+            return !node.Root.Cards.HandAndDraw.Any(o => o.Rank == node.Combination.Last().Rank - 1);
+        }
+
+        internal static bool IsFlush(this Node node) 
+        {
+            return node.Root.Cards.HandAndDraw.Count == node.Combination.Count && node.Root.Cards.HandAndDraw.All(o => o.Suit == node.Root.Cards.HandAndDraw.First().Suit);
+        }
+
+        internal static int HatPoints(this Cards cards)
+        {
+            int output = 0;
+            IEnumerable<Card> jacks = cards.Hand.Where(o => o.Rank == Rank.JACK);
+            foreach (Card jack in jacks)
+            {
+                output += Rank.Count() - cards.DealAndDraw.Count(o => o.Suit == jack.Suit);
+            }
+            return output;
+        }
+
+        internal static int GetPointCombinations(this Node node)
         {
             int output = 0;
             ISet<Card> combo = node.Combination;
-            ISet<Card> cards = node.Root.Cards;
+            ISet<Card> handAndDraw = node.Root.Cards.HandAndDraw;
             if (combo.Select(o => o.Value()).Sum() == 15)
             {
                 output += 2;
@@ -91,13 +73,12 @@ namespace Cribbage.Controllers
             {
                 output += 2;
             }
-            if (cards.Count == combo.Count &&
-                    cards.All(o => o.Suit == cards.First().Suit))
+            if (handAndDraw.Count == combo.Count &&
+                    handAndDraw.All(o => o.Suit == handAndDraw.First().Suit))
             {
-                output += cards.Count;
+                output += handAndDraw.Count;
             }
             bool isRun = true;
-            // check that combination contains only sequential ranks
             for (int i = 1; i < combo.Count; i++)
             {
                 if (combo.ElementAt(i - 1).Rank - combo.ElementAt(i).Rank != 1)
@@ -106,7 +87,7 @@ namespace Cribbage.Controllers
                     break;
                 }
             }
-            if (isRun && cards.Any(o => o.Rank == combo.Last().Rank - 1))
+            if (isRun && handAndDraw.Any(o => o.Rank == combo.Last().Rank - 1))
             {
                 output += combo.Count;
             }

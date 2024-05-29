@@ -1,60 +1,58 @@
-﻿namespace Cribbage.Model.CombinationTree
+﻿using Cribbage.Model.Utilities;
+
+namespace Cribbage.Model.CombinationTree
 {
-    internal class RootNode : AbstractNode, IObserver<Card?>
+    internal class RootNode : AbstractNode, IObserver<DrawCardEventArgs>
     {
-        internal RootNode(ISet<Card> cards, ISet<Card> discard) : base()
+        internal RootNode(Cards cards) : base()
         {
             Cards = cards;
-            Hand = cards;
-            Discard = discard;
+            Subscription = cards.Subscribe(this);
             AllNodes = new HashSet<Node>();
+            Points = new Points(0, 0, 0, []);
             Regenerate();
         }
         internal readonly ISet<Node> AllNodes;
-        internal ISet<Card> Cards;
-        internal readonly ISet<Card> Discard;
-        internal readonly ISet<Card> Hand;
+        internal readonly Cards Cards;
+        internal readonly Points Points;
+        private IDisposable Subscription { get; set; }
 
         public void OnCompleted()
         {
+            Subscription.Dispose();
             throw new NotImplementedException();
         }
-
         public void OnError(Exception error)
         {
             throw new NotImplementedException();
         }
-
-        public void OnNext(Card? value)
+        public void OnNext(DrawCardEventArgs value)
         {
-            if (value == null)
+            if (value.PrecedingDraw != null) 
             {
-                Cards = Hand;
+                foreach (Node node in AllNodes.Where(o => o.Combination.Contains(value.PrecedingDraw)))
+
+                {
+                    node.IsDeleted = true;
+                    AllNodes.Remove(node);
+                }
+                RemoveDeletedChildren();
             }
-            else
+            if (value.NextDraw != null)
             {
-                Cards = Hand.Append(value).ToHashSet();
+                CreateAddedCardNodes();
             }
-            Regenerate();
+            foreach (Node node in ChildNodes)
+            {
+                node.Regenerate();
+            }
         }
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (Card card in Cards) 
+            foreach (Card card in Cards.HandAndDraw) 
             {
-                AddNode(new HashSet<Card> { card }, this);
-            }
-        }
-
-        protected override void DestroyRemovedCardNodes()
-        {
-            foreach (Node node in ChildNodes) 
-            {
-                if (!this.Cards.Contains(node.Card)) 
-                {
-                    ChildNodes.Remove(node);
-                    this.AllNodes.Remove(node);
-                }
+                AddNode(card, this); 
             }
         }
     }

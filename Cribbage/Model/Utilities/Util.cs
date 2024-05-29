@@ -41,7 +41,7 @@ namespace Cribbage.Model.Utilities
         {
             return Math.Abs(card.Rank - target.Rank) <= 1;
         }
-        internal static int CountInRank(this Card[] cards, int rank)
+        internal static int CountInRank(this IEnumerable<Card> cards, int rank)
         {
             return cards.Count(o => o.Rank == rank);
         }
@@ -91,6 +91,15 @@ namespace Cribbage.Model.Utilities
         internal static string Shorthand(this Card card) 
         {
             return string.Concat(card.Rank.Name, card.Suit.ToString().AsSpan(0, 1));
+        }
+        internal static HashSet<Card> Copy(ISet<Card> originals)
+        {
+            HashSet<Card> output = [];
+            foreach (Card original in originals)
+            {
+                output.Add(new Card(original.Rank, original.Suit));
+            }
+            return output;
         }
     }
 }

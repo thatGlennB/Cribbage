@@ -42,8 +42,6 @@ List<Card> cards =
 ];
 
 
-
-
 IEnumerable<ResultDTO> result = new DealValueController().Get(cards.ToHashSet());
 foreach (ResultDTO resultDTO in result)
 {

@@ -1,4 +1,4 @@
-﻿namespace Cribbage.Model.Utilities
+﻿namespace Cribbage.HelperTypes
 {
     internal sealed class Subscriber<T>(ISet<IObserver<T>> observers, IObserver<T> observer) : IDisposable
     {

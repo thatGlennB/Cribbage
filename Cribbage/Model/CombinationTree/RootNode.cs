@@ -1,4 +1,6 @@
-﻿using Cribbage.Model.Utilities;
+﻿using Cribbage.HelperTypes;
+using Cribbage.Interfaces;
+using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model.CombinationTree
 {
@@ -50,7 +52,7 @@ namespace Cribbage.Model.CombinationTree
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (Card card in Cards.HandAndDraw) 
+            foreach (ICard card in Cards.HandAndDraw) 
             {
                 AddNode(card, this); 
             }

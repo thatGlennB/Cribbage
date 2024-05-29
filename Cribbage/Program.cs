@@ -6,6 +6,7 @@ using Cribbage.Interfaces;
 using Cribbage.Model;
 using Cribbage.Model.Enums;
 using Cribbage.Model.Utilities;
+using System.Reflection;
 
 Console.WriteLine("Hello, World!");
 
@@ -31,7 +32,7 @@ Console.WriteLine("Hello, World!");
 // TODO: unit tests
 // TODO: create more appealing view (blazor? api?)
 
-List<Card> cards =
+List<ICard> cards =
 [
     new Card(Rank.FIVE, Suit.HEARTS),
     new Card(Rank.FIVE, Suit.CLUBS),
@@ -42,16 +43,24 @@ List<Card> cards =
 ];
 
 
-IEnumerable<ResultDTO> result = new DealValueController().Get(cards.ToHashSet());
-foreach (ResultDTO resultDTO in result)
-{
-    Console.Write($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}");
-    Console.Write($"\t{string.Join(",", resultDTO.Discard.Select(o => o.Shorthand()))}");
-    Console.Write($"\t{resultDTO.HandValue}");
-    Console.Write($"\t{resultDTO.DiscardValue}");
-    Console.Write($"\t{resultDTO.ExpectedDrawValue}");
-    Console.Write($"\n");
-}
+//IEnumerable<ResultDTO> result = new DealValueController().Get(cards.ToHashSet());
+//foreach (ResultDTO resultDTO in result)
+//{
+//    Console.Write($"\t{string.Join(",", resultDTO.Hand.Select(o => o.Shorthand()))}");
+//    Console.Write($"\t{string.Join(",", resultDTO.Discard.Select(o => o.Shorthand()))}");
+//    Console.Write($"\t{resultDTO.HandValue}");
+//    Console.Write($"\t{resultDTO.DiscardValue}");
+//    Console.Write($"\t{resultDTO.ExpectedDrawValue}");
+//    Console.Write($"\n");
+//}
+
+
+
+Card a = new Card(Rank.TWO, Suit.HEARTS);
+
+
+
 
 Console.WriteLine("end");
 
+enum Stooges { Larry, Curly, Moe }

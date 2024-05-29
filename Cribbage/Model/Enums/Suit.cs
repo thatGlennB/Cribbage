@@ -1,7 +1,7 @@
 ﻿namespace Cribbage.Model.Enums
 {
-    public enum Suit
+    public enum Suit : int
     {
-        HEARTS, DIAMONDS, CLUBS, SPADES
+        HEARTS = 0, DIAMONDS = 1, CLUBS = 2, SPADES = 3
     }
 }

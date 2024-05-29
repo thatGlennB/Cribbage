@@ -1,4 +1,4 @@
-﻿namespace Cribbage.Model
+﻿namespace Cribbage.Model.CombinationTree
 {
     internal class Points
     {
@@ -6,7 +6,7 @@
         public int Discard { get; set; }
         public int HatValue { get; set; }
         public List<int> DrawValues { get; set; }
-        internal Points(int hand, int discard, int hatValue, List<int> drawValues) 
+        internal Points(int hand, int discard, int hatValue, List<int> drawValues)
         {
             Hand = hand;
             Discard = discard;

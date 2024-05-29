@@ -1,4 +1,5 @@
-﻿using Cribbage.Model.CombinationTree;
+﻿using Cribbage.Interfaces;
+using Cribbage.Model.CombinationTree;
 using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model
@@ -6,24 +7,16 @@ namespace Cribbage.Model
     internal class Deal
     {
         internal ISet<RootNode> Roots { get; private set; } = new HashSet<RootNode>();
-        internal Deal(ISet<Card> cards)
+        internal Deal(ISet<ICard> cards)
         {
-            HashSet<Card> discard = [];
-            HashSet<Card> hand = [];
+            HashSet<ICard> hand = [];
             if (cards.Count == 5 || cards.Count == 6)
             {
-                //HashSet<Card> cardCopy = new();
-                //cardCopy = cards.CreateCopy();
-                IEnumerable<int[]> combos = Util.Combinations(cards.Count, cards.Count - 4);
-                foreach (int[] combo in combos)
+                IEnumerable<IEnumerable<ICard>> discardCombinations = cards.GetCombinations(cards.Count - 4);
+                foreach (IEnumerable<ICard> discard in discardCombinations)
                 {
-                    discard.Clear();
-                    foreach (int index in combo)
-                    {
-                        discard.Add(cards.ElementAt(index));
-                    }
                     hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
-                    Roots.Add(new RootNode(new Cards(hand, discard)));
+                    Roots.Add(new RootNode(new Cards(hand, discard.ToHashSet())));
                 }
             }
             else throw new ArgumentOutOfRangeException(nameof(cards), $"A deal object cannot be made for a set of {cards.Count} cards");

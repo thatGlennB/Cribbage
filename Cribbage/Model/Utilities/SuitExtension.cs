@@ -1,8 +1,8 @@
 ﻿using Cribbage.Model.Enums;
 
 namespace Cribbage.Model.Utilities
-{ 
-    internal static class Suits
+{
+    internal static class SuitExtension
     {
         internal static int Count => Enum.GetNames(typeof(Suit)).Length;
         internal static IEnumerable<char> ToCharArray()

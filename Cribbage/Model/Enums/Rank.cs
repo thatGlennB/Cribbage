@@ -1,57 +1,40 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Cribbage.Model.Enums
 {
 
     // TODO: can Lazy do this?
 
-
-    public class Rank : IComparable
+    public enum Rank : int
     {
-        // Not thread-safe. Revisit...
-        public static Rank ACE = new("A", 1);
-        public static Rank TWO = new("2", 2);
-        public static Rank THREE = new("3", 3);
-        public static Rank FOUR = new("4", 4);
-        public static Rank FIVE = new("5", 5);
-        public static Rank SIX = new("6", 6);
-        public static Rank SEVEN = new("7", 7);
-        public static Rank EIGHT = new("8", 8);
-        public static Rank NINE = new("9", 9);
-        public static Rank TEN = new("10", 10);
-        public static Rank JACK = new("J", 11);
-        public static Rank QUEEN = new("Q", 12);
-        public static Rank KING = new("K", 13);
-        private Rank(string name, int value)
-        {
-            Name = name;
-            Value = value;
-        }
+        NONE = 0,
+        ACE = 1,
+        TWO =  2,
+        THREE =  3,
+        FOUR = 4,
+        FIVE = 5,
+        SIX = 6,
+        SEVEN = 7,
+        EIGHT = 8,
+        NINE = 9,
+        TEN = 10,
+        JACK = 11,
+        QUEEN = 12,
+        KING = 13
+    }
+
+    public static class RankExtension
+    {
         public static int Count()
         {
-            return typeof(Rank).GetMembers().Count(o => o.MemberType == MemberTypes.Field);
+            return 13;
         }
-        public string Name { get; set; }
-        public int Value { get; set; }
-        public int CompareTo(object? obj)
+        public static string Name(this Rank rank) => (int)rank == 1 ? "A" : (int)rank <= 10 ? ((int)rank).ToString() : rank.ToString()[..1];
+        internal static IEnumerable<char> ToCharArray()
         {
-            if (obj == null) return 1;
-            return Value.CompareTo(((Rank)obj).Value);
-        }
-        public static implicit operator int(Rank rank) => rank.Value;
-        public static Rank? GetRank(int rank)
-        {
-            foreach (FieldInfo field in typeof(Rank).GetFields())
-            {
-                object? result = field.GetValue(null);
-                if (result == null) continue;
-                if (result.GetType() == typeof(Rank))
-                {
-                    Rank output = (Rank)result;
-                    if (output.Value == rank) return output;
-                }
-            }
-            return null;
+            foreach (Rank rank in Enum.GetValues(typeof(Rank)))
+                yield return rank.Name().ToUpper()[0];
         }
     }
 }

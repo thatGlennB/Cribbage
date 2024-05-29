@@ -1,5 +1,4 @@
-﻿using Cribbage.Controller.DataTransferObject;
-using Cribbage.Controllers;
+﻿using Cribbage.DataTransferObject;
 using Cribbage.Interfaces;
 using Cribbage.Model;
 using Cribbage.Model.CombinationTree;
@@ -10,7 +9,7 @@ namespace Cribbage.Controller
 {
     public class DealValueController : IDealValueController
     {
-        public IEnumerable<ResultDTO> Get(ISet<Card> cards)
+        public IEnumerable<ResultDTO> Get(ISet<ICard> cards)
         {
             HashSet<ResultDTO> output = [];
             Deal deal = new(cards);
@@ -20,10 +19,10 @@ namespace Cribbage.Controller
                 root.Points.Discard = root.Cards.Discard.GetDiscardPoints();
                 root.Points.HatValue = root.Cards.HatPoints();
                 root.Points.DrawValues.Clear();
-                for (int i = 1; i <= Rank.Count(); i++)
+                for (int i = 1; i <= RankExtension.Count(); i++)
                 {
                     root.Cards.SetDrawRank(i);
-                    int possibleDrawsInSuit = Suits.Count - root.Cards.Deal.CountInRank(i);
+                    int possibleDrawsInSuit = SuitExtension.Count - root.Cards.Deal.CountInRank(i);
                     int dummyA = root.GetHandPoints();
                     int dummyB = root.Points.Hand;
                     root.Points.DrawValues.Add(( dummyA - dummyB ) * possibleDrawsInSuit);
@@ -33,7 +32,7 @@ namespace Cribbage.Controller
                 {
                     HandValue = root.Points.Hand,
                     DiscardValue = root.Points.Discard,
-                    ExpectedDrawValue = (double)(root.Points.HatValue + root.Points.DrawValues.Sum()) / Util.DrawCount(root.Cards.Deal.Count()),
+                    ExpectedDrawValue = (double)(root.Points.HatValue + root.Points.DrawValues.Sum()) / Util.DrawCount(root.Cards.Deal.Count),
                     Hand = root.Cards.Hand,
                     Discard = root.Cards.Discard
                 }) ;

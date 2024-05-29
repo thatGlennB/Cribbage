@@ -1,27 +1,28 @@
-﻿using Cribbage.Model.Utilities;
+﻿using Cribbage.Interfaces;
+using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model.CombinationTree
 {
     internal class Node : AbstractNode
     {
-        internal readonly ISet<Card> Combination;
+        internal readonly ISet<ICard> Combination;
         internal readonly RootNode Root;
 
-        internal readonly Card Card;
+        internal readonly ICard Card;
 
-        internal Node(ISet<Card> combination, RootNode root) : base()
+        internal Node(ISet<ICard> combination, RootNode root) : base()
         {
             Root = root;
-            Combination = Util.Copy(combination);
+            Combination = combination;
             Card = combination.Last();
             Regenerate();
         }
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (Card card in Root.Cards.HandAndDraw)
+            foreach (ICard card in Root.Cards.HandAndDraw)
             {
-                if (Card.Compare(card) > 0) 
+                if (Card.CompareTo(card) > 0) 
                 {
                     AddNode(card, Root, Combination);
                 }

@@ -1,17 +1,17 @@
-﻿using Cribbage.Model;
+﻿using Cribbage.Interfaces;
 using Cribbage.Model.CombinationTree;
 using Cribbage.Model.Enums;
 using Cribbage.Model.Utilities;
 
 
-namespace Cribbage.Controllers
+namespace Cribbage.Model
 {
     internal static class PointCombinations
     {
-        internal static int GetHandPoints(this RootNode root) 
+        internal static int GetHandPoints(this RootNode root)
         {
             int output = 0;
-            foreach (Node node in root.AllNodes) 
+            foreach (Node node in root.AllNodes)
             {
                 output += node.Combination.IsFifteens() ? 2 : 0;
                 output += node.Combination.IsPair() ? 2 : 0;
@@ -20,17 +20,17 @@ namespace Cribbage.Controllers
             }
             return output;
         }
-        internal static int GetDiscardPoints(this ISet<Card> discard) 
+        internal static int GetDiscardPoints(this ISet<ICard> discard)
         {
-            return (IsFifteens(discard) ? 2 : 0) + (IsPair(discard) ? 2 : 0);
+            return (discard.IsFifteens() ? 2 : 0) + (discard.IsPair() ? 2 : 0);
         }
-        internal static bool IsFifteens(this ISet<Card> cards) => cards.Select(o => o.Value()).Sum() == 15;
+        internal static bool IsFifteens(this ISet<ICard> cards) => cards.Select(o => o.Value()).Sum() == 15;
 
-        internal static bool IsPair(this ISet<Card> cards) => cards.Count == 2 && cards.First().Rank == cards.Last().Rank;
+        internal static bool IsPair(this ISet<ICard> cards) => cards.Count == 2 && cards.First().Rank == cards.Last().Rank;
 
-        internal static bool IsRun(this Node node) 
+        internal static bool IsRun(this Node node)
         {
-            if (node.Combination.Count < 3) 
+            if (node.Combination.Count < 3)
             {
                 return false;
             }
@@ -44,7 +44,7 @@ namespace Cribbage.Controllers
             return !node.Root.Cards.HandAndDraw.Any(o => o.Rank == node.Combination.Last().Rank - 1);
         }
 
-        internal static bool IsFlush(this Node node) 
+        internal static bool IsFlush(this Node node)
         {
             return node.Root.Cards.HandAndDraw.Count == node.Combination.Count && node.Root.Cards.HandAndDraw.All(o => o.Suit == node.Root.Cards.HandAndDraw.First().Suit);
         }
@@ -52,10 +52,10 @@ namespace Cribbage.Controllers
         internal static int HatPoints(this Cards cards)
         {
             int output = 0;
-            IEnumerable<Card> jacks = cards.Hand.Where(o => o.Rank == Rank.JACK);
-            foreach (Card jack in jacks)
+            IEnumerable<ICard> jacks = cards.Hand.Where(o => o.Rank == Rank.JACK);
+            foreach (ICard jack in jacks)
             {
-                output += Rank.Count() - cards.DealAndDraw.Count(o => o.Suit == jack.Suit);
+                output += RankExtension.Count() - cards.DealAndDraw.Count(o => o.Suit == jack.Suit);
             }
             return output;
         }
@@ -63,8 +63,8 @@ namespace Cribbage.Controllers
         internal static int GetPointCombinations(this Node node)
         {
             int output = 0;
-            ISet<Card> combo = node.Combination;
-            ISet<Card> handAndDraw = node.Root.Cards.HandAndDraw;
+            ISet<ICard> combo = node.Combination;
+            ISet<ICard> handAndDraw = node.Root.Cards.HandAndDraw;
             if (combo.Select(o => o.Value()).Sum() == 15)
             {
                 output += 2;

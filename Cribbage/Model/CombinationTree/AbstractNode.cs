@@ -1,4 +1,5 @@
-﻿using Cribbage.Model.Utilities;
+﻿using Cribbage.Interfaces;
+using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model.CombinationTree
 {
@@ -34,9 +35,9 @@ namespace Cribbage.Model.CombinationTree
                 }
             }
         }
-        virtual protected void AddNode(Card card, RootNode root, ISet<Card>? cards = null)
+        virtual protected void AddNode(ICard card, RootNode root, ISet<ICard>? cards = null)
         {
-            cards ??= new HashSet<Card>();
+            cards ??= new HashSet<ICard>();
             if (!ChildNodes.Any(o => o.Card.Rank == card.Rank && o.Card.Suit == card.Suit))
             {
                 Node newNode = new(cards.Append(card).ToHashSet(), root);

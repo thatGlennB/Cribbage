@@ -2,7 +2,7 @@
 
 namespace Cribbage.Model
 {
-    public record Card(Rank Rank, Suit Suit)
+    public record Card(Rank Rank, Suit Suit) : ICard
     {
         public override string ToString()
         {

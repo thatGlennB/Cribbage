@@ -22,7 +22,7 @@ namespace Cribbage.Controller
                 for (int i = 1; i <= RankExtension.Count(); i++)
                 {
                     root.Cards.SetDrawRank(i);
-                    int possibleDrawsInSuit = SuitExtension.Count - root.Cards.Deal.CountInRank(i);
+                    int possibleDrawsInSuit = typeof(Suit).Count() - root.Cards.Deal.CountInRank(i);
                     int dummyA = root.GetHandPoints();
                     int dummyB = root.Points.Hand;
                     root.Points.DrawValues.Add(( dummyA - dummyB ) * possibleDrawsInSuit);
@@ -32,7 +32,7 @@ namespace Cribbage.Controller
                 {
                     HandValue = root.Points.Hand,
                     DiscardValue = root.Points.Discard,
-                    ExpectedDrawValue = (double)(root.Points.HatValue + root.Points.DrawValues.Sum()) / Util.DrawCount(root.Cards.Deal.Count),
+                    ExpectedDrawValue = (double)(root.Points.HatValue + root.Points.DrawValues.Sum()) / Util.PossibleDrawCount(root.Cards.Deal.Count),
                     Hand = root.Cards.Hand,
                     Discard = root.Cards.Discard
                 }) ;

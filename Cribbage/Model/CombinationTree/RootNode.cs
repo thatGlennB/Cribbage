@@ -1,6 +1,4 @@
 ﻿using Cribbage.HelperTypes;
-using Cribbage.Interfaces;
-using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model.CombinationTree
 {
@@ -30,7 +28,7 @@ namespace Cribbage.Model.CombinationTree
         }
         public void OnNext(DrawCardEventArgs value)
         {
-            if (value.PrecedingDraw != null) 
+            if (value.PrecedingDraw != null)
             {
                 foreach (Node node in AllNodes.Where(o => o.Combination.Contains(value.PrecedingDraw)))
 
@@ -52,9 +50,9 @@ namespace Cribbage.Model.CombinationTree
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (Card card in Cards.HandAndDraw) 
+            foreach (Card card in Cards.HandAndDraw)
             {
-                AddNode(card, this); 
+                AddNode(card, this);
             }
         }
     }

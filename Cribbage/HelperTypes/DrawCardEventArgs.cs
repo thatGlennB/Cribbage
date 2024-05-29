@@ -1,4 +1,4 @@
-﻿using Cribbage.Interfaces;
+﻿using Cribbage.Model;
 
 namespace Cribbage.HelperTypes
 {

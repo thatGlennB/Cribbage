@@ -1,5 +1,4 @@
 ﻿using Cribbage.HelperTypes;
-using Cribbage.Interfaces;
 using Cribbage.Model.Enums;
 using Cribbage.Model.Utilities;
 
@@ -49,7 +48,7 @@ namespace Cribbage.Model.CombinationTree
         public void ClearDraw() => Draw = null;
         public void SetDrawRank(int rank)
         {
-            for (int i = 0; i < SuitExtension.Count; i++)
+            for (int i = 0; i < typeof(Suit).Count(); i++)
             {
                 if (!Deal.Any(o => (int)o.Rank == rank && (int)o.Suit == i))
                 {

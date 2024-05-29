@@ -1,7 +1,4 @@
-﻿using Cribbage.Interfaces;
-using Cribbage.Model.Utilities;
-
-namespace Cribbage.Model.CombinationTree
+﻿namespace Cribbage.Model.CombinationTree
 {
     internal class Node : AbstractNode
     {
@@ -22,7 +19,7 @@ namespace Cribbage.Model.CombinationTree
         {
             foreach (Card card in Root.Cards.HandAndDraw)
             {
-                if (Card.CompareTo(card) > 0) 
+                if (Card.CompareTo(card) > 0)
                 {
                     AddNode(card, Root, Combination);
                 }

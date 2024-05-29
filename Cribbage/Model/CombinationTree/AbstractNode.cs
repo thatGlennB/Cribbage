@@ -1,7 +1,4 @@
-﻿using Cribbage.Interfaces;
-using Cribbage.Model.Utilities;
-
-namespace Cribbage.Model.CombinationTree
+﻿namespace Cribbage.Model.CombinationTree
 {
     internal abstract class AbstractNode
     {
@@ -15,21 +12,21 @@ namespace Cribbage.Model.CombinationTree
         {
             CreateAddedCardNodes();
             RemoveDeletedChildren();
-            foreach(Node node in ChildNodes) 
+            foreach (Node node in ChildNodes)
             {
                 node.Regenerate();
             }
         }
         abstract protected void CreateAddedCardNodes();
-        virtual protected void RemoveDeletedChildren() 
+        virtual protected void RemoveDeletedChildren()
         {
-            foreach(Node node in ChildNodes) 
+            foreach (Node node in ChildNodes)
             {
                 if (node.IsDeleted)
                 {
                     ChildNodes.Remove(node);
                 }
-                else 
+                else
                 {
                     node.RemoveDeletedChildren();
                 }

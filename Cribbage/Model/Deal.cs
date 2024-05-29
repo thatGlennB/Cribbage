@@ -1,5 +1,4 @@
-﻿using Cribbage.Interfaces;
-using Cribbage.Model.CombinationTree;
+﻿using Cribbage.Model.CombinationTree;
 using Cribbage.Model.Utilities;
 
 namespace Cribbage.Model

@@ -1,12 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using Cribbage.Controller;
-using Cribbage.Controller.DataTransferObject;
-using Cribbage.Interfaces;
 using Cribbage.Model;
 using Cribbage.Model.Enums;
 using Cribbage.Model.Utilities;
-using System.Reflection;
 
 Console.WriteLine("Hello, World!");
 
@@ -54,9 +50,13 @@ List<Card> cards =
 //    Console.Write($"\n");
 //}
 
+Rank[] shlock = (Rank[])Enum.GetValues(typeof(Rank));
+int max = (int)((Rank[])Enum.GetValues(typeof(Rank))).Max();
 
-
-Card a = new Card(Rank.TWO, Suit.HEARTS);
+foreach (var item in Enum.GetValues(typeof(Rank)))
+{
+    Console.WriteLine(((int)item).ToString());
+}
 
 
 

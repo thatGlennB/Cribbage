@@ -43,6 +43,6 @@ namespace Cribbage.Model.Utilities
             foreach (int index in indices) 
                 yield return superset.ElementAt(index);
         }
-        internal static int DrawCount(int excludedCards) => SuitExtension.Count * RankExtension.Count() - excludedCards;
+        internal static int PossibleDrawCount(int excludedCards) => typeof(Suit).Count() * typeof(Rank).Max() - excludedCards;
     }
 }

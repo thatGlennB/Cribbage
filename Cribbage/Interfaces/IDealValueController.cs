@@ -5,6 +5,6 @@ namespace Cribbage.Interfaces
 {
     public interface IDealValueController
     {
-        IEnumerable<ResultDTO> Get(ISet<ICard> deal);
+        IEnumerable<ResultDTO> Get(ISet<Card> deal);
     }
 }

@@ -5,12 +5,12 @@ namespace Cribbage.Model.CombinationTree
 {
     internal class Node : AbstractNode
     {
-        internal readonly ISet<ICard> Combination;
+        internal readonly ISet<Card> Combination;
         internal readonly RootNode Root;
 
-        internal readonly ICard Card;
+        internal readonly Card Card;
 
-        internal Node(ISet<ICard> combination, RootNode root) : base()
+        internal Node(ISet<Card> combination, RootNode root) : base()
         {
             Root = root;
             Combination = combination;
@@ -20,7 +20,7 @@ namespace Cribbage.Model.CombinationTree
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (ICard card in Root.Cards.HandAndDraw)
+            foreach (Card card in Root.Cards.HandAndDraw)
             {
                 if (Card.CompareTo(card) > 0) 
                 {

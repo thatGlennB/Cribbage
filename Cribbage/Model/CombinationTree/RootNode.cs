@@ -52,7 +52,7 @@ namespace Cribbage.Model.CombinationTree
 
         protected override void CreateAddedCardNodes()
         {
-            foreach (ICard card in Cards.HandAndDraw) 
+            foreach (Card card in Cards.HandAndDraw) 
             {
                 AddNode(card, this); 
             }

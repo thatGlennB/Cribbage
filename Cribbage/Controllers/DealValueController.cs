@@ -9,7 +9,7 @@ namespace Cribbage.Controller
 {
     public class DealValueController : IDealValueController
     {
-        public IEnumerable<ResultDTO> Get(ISet<ICard> cards)
+        public IEnumerable<ResultDTO> Get(ISet<Card> cards)
         {
             HashSet<ResultDTO> output = [];
             Deal deal = new(cards);

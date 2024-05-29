@@ -7,13 +7,13 @@ namespace Cribbage.Model
     internal class Deal
     {
         internal ISet<RootNode> Roots { get; private set; } = new HashSet<RootNode>();
-        internal Deal(ISet<ICard> cards)
+        internal Deal(ISet<Card> cards)
         {
-            HashSet<ICard> hand = [];
+            HashSet<Card> hand = [];
             if (cards.Count == 5 || cards.Count == 6)
             {
-                IEnumerable<IEnumerable<ICard>> discardCombinations = cards.GetCombinations(cards.Count - 4);
-                foreach (IEnumerable<ICard> discard in discardCombinations)
+                IEnumerable<IEnumerable<Card>> discardCombinations = cards.GetCombinations(cards.Count - 4);
+                foreach (IEnumerable<Card> discard in discardCombinations)
                 {
                     hand = cards.Where(o => !discard.Contains(o)).ToHashSet();
                     Roots.Add(new RootNode(new Cards(hand, discard.ToHashSet())));

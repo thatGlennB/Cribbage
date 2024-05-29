@@ -2,5 +2,5 @@
 
 namespace Cribbage.HelperTypes
 {
-    internal record DrawCardEventArgs(ICard? PrecedingDraw, ICard? NextDraw);
+    internal record DrawCardEventArgs(Card? PrecedingDraw, Card? NextDraw);
 }

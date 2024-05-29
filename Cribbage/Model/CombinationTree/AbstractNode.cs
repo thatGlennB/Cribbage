@@ -35,9 +35,9 @@ namespace Cribbage.Model.CombinationTree
                 }
             }
         }
-        virtual protected void AddNode(ICard card, RootNode root, ISet<ICard>? cards = null)
+        virtual protected void AddNode(Card card, RootNode root, ISet<Card>? cards = null)
         {
-            cards ??= new HashSet<ICard>();
+            cards ??= new HashSet<Card>();
             if (!ChildNodes.Any(o => o.Card.Rank == card.Rank && o.Card.Suit == card.Suit))
             {
                 Node newNode = new(cards.Append(card).ToHashSet(), root);

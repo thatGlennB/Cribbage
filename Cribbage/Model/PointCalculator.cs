@@ -20,13 +20,13 @@ namespace Cribbage.Model
             }
             return output;
         }
-        internal static int GetDiscardPoints(this ISet<ICard> discard)
+        internal static int GetDiscardPoints(this ISet<Card> discard)
         {
             return (discard.IsFifteens() ? 2 : 0) + (discard.IsPair() ? 2 : 0);
         }
-        internal static bool IsFifteens(this ISet<ICard> cards) => cards.Select(o => o.Value()).Sum() == 15;
+        internal static bool IsFifteens(this ISet<Card> cards) => cards.Select(o => o.Value()).Sum() == 15;
 
-        internal static bool IsPair(this ISet<ICard> cards) => cards.Count == 2 && cards.First().Rank == cards.Last().Rank;
+        internal static bool IsPair(this ISet<Card> cards) => cards.Count == 2 && cards.First().Rank == cards.Last().Rank;
 
         internal static bool IsRun(this Node node)
         {
@@ -52,8 +52,8 @@ namespace Cribbage.Model
         internal static int HatPoints(this Cards cards)
         {
             int output = 0;
-            IEnumerable<ICard> jacks = cards.Hand.Where(o => o.Rank == Rank.JACK);
-            foreach (ICard jack in jacks)
+            IEnumerable<Card> jacks = cards.Hand.Where(o => o.Rank == Rank.JACK);
+            foreach (Card jack in jacks)
             {
                 output += RankExtension.Count() - cards.DealAndDraw.Count(o => o.Suit == jack.Suit);
             }
@@ -63,8 +63,8 @@ namespace Cribbage.Model
         internal static int GetPointCombinations(this Node node)
         {
             int output = 0;
-            ISet<ICard> combo = node.Combination;
-            ISet<ICard> handAndDraw = node.Root.Cards.HandAndDraw;
+            ISet<Card> combo = node.Combination;
+            ISet<Card> handAndDraw = node.Root.Cards.HandAndDraw;
             if (combo.Select(o => o.Value()).Sum() == 15)
             {
                 output += 2;

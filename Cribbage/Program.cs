@@ -32,7 +32,7 @@ Console.WriteLine("Hello, World!");
 // TODO: unit tests
 // TODO: create more appealing view (blazor? api?)
 
-List<ICard> cards =
+List<Card> cards =
 [
     new Card(Rank.FIVE, Suit.HEARTS),
     new Card(Rank.FIVE, Suit.CLUBS),
